@@ -1,0 +1,7 @@
+{
+  Filter = {
+    Bundles = ( "com.apple.UIKit", "com.apple.CoreGraphics", "com.apple.IconServices" );
+    Executables = ( "lsd", "iconservicesagent" );
+    Mode = "Any";
+  };
+}
