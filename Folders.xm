@@ -31,6 +31,12 @@ NSString *backgroundBasePath;
 
 %group FolderIcon13Later
 
+// workaround for Folded trying to hide blurView which doesn't exist on UIImageView, causing a crash
+%hook UIImageView
+%new
+- (UIView *)blurView { return nil; }
+%end
+
 %hook SBFolderIconImageView
 
 %property (nonatomic, retain) UIImageView *neonCustomBackgroundView;

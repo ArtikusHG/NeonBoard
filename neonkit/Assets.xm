@@ -8,6 +8,24 @@ BOOL glyphMode;
 
 static char *UIKitCarBundle;
 
+@interface UIImage (Symbol)
+@property (nonatomic) BOOL hijackIsSymbol;
++(id)_systemImageNamed:(id)arg1 fallback:(id)arg2 ;
+
+@end
+
+%hook UIImage
+
+%property (nonatomic) BOOL hijackIsSymbol;
+// MAKE CUSTOM CLASS THAT JUST DOES THIS
+- (BOOL)isSymbolImage { return self.hijackIsSymbol ? : %orig; }
+%end
+
+%hook _UIImageCGImageContent
+%new
+- (CGFloat)glyphScaleFactor { return 1.0f; }
+%end
+
 %hook _UIAssetManager
 
 %new
@@ -19,10 +37,19 @@ static char *UIKitCarBundle;
 	if (kCFCoreFoundationVersionNumber <= 847.27) bundle = objc_getAssociatedObject(self, &UIKitCarBundle);
 	else bundle = self.bundle;
 	if (!bundle) bundle = [NSBundle mainBundle];
+	if ([bundle.bundlePath rangeOfString:@"NeonCache"].location != NSNotFound) return orig;
 	if ([NeonCacheManager isImageNameUnthemed:name bundleID:bundle.bundleIdentifier]) return orig;
 	if (UIImage *cachedImage = [NeonCacheManager getCacheImage:name bundleID:bundle.bundleIdentifier]) {
-		if (@available(iOS 13, *)) if (configuration) return [cachedImage imageWithConfiguration:configuration];
+		if (@available(iOS 13, *)) {
+			UIImage *image;
+			if (configuration) image = [[cachedImage imageWithConfiguration:configuration] imageByApplyingSymbolConfiguration:orig.symbolConfiguration];
+			else image = [[cachedImage imageWithConfiguration:orig.configuration] imageByApplyingSymbolConfiguration:orig.symbolConfiguration];
+			image.hijackIsSymbol = YES;
+			return image;
+		}
 		return cachedImage;
+		//symbolImage true; images nil (the array); imageAsset exists; uigraphicsimagerendererformat idk; traitcollection is; config/symbolconfig; flexed addimage removeimage etc are;
+		//symbol image false; images nil; imageasset exists; rendererformat too; trait collection too; config; symbolconfig no; these + methods dont!!!
 	}
 	for (NSString *theme in themes) {
 		NSMutableArray *potentialPaths = [NSMutableArray new];
@@ -71,7 +98,7 @@ static char *UIKitCarBundle;
 /*- (UIImage *)imageNamed:(NSString *)name {
   return [self neonImageNamed:name originalImage:%orig];
 }*/
-- (UIImage *)imageNamed:(NSString *)name withTrait:(id)trait {
+/*- (UIImage *)imageNamed:(NSString *)name withTrait:(id)trait {
   return [self neonImageNamed:name originalImage:%orig configuration:nil];
 }
 - (UIImage *)imageNamed:(NSString *)name idiom:(long long)idiom {
@@ -88,7 +115,7 @@ static char *UIKitCarBundle;
 }
 - (UIImage *)imageNamed:(NSString *)name configuration:(id)configuration cachingOptions:(id)cachingOptions attachCatalogImage:(BOOL)attachCatalogImage {
 	return [self neonImageNamed:name originalImage:%orig configuration:configuration];
-}
+}*/
 
 %end
 

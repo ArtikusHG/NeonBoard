@@ -3,6 +3,8 @@
 #include "NBPThemeCell.h"
 #include "NBPSelectThemeController.h"
 
+NSString *themeNameFromDirectoryName(NSString *themeName);
+
 @implementation NBPSelectThemeController
 
 - (NSString *)title { return @"Select theme"; }
@@ -21,8 +23,8 @@
         NSSet *contentsSet = [NSSet setWithArray:[[NSFileManager defaultManager] contentsOfDirectoryAtPath:themePath error:nil]];
         if ([contentsSet isEqualToSet:[NSSet setWithArray:@[@"Icon.png"]]] || [contentsSet isEqualToSet:[NSSet setWithArray:@[@"icon.png"]]]) continue;
 
-        NSString *title = theme;
-        if ([[title substringFromIndex:title.length - 6] isEqualToString:@".theme"]) title = [title substringToIndex:title.length - 6];
+        NSString *title = themeNameFromDirectoryName(theme);
+        //if ([[title substringFromIndex:title.length - 6] isEqualToString:@".theme"]) title = [title substringToIndex:title.length - 6];
         PSSpecifier *specifier = [PSSpecifier preferenceSpecifierNamed:title target:self set:nil get:nil detail:NSClassFromString(@"NBPSelectIconController") cell:PSLinkCell edit:nil];
         [specifier setProperty:[NBPThemeCell class] forKey:@"cellClass"];
 

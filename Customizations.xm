@@ -27,6 +27,7 @@
 
 // Hide dock background
 %group NoDockBg
+
 %hook SBDockView
 - (instancetype)initWithDockListView:(id)dockListView forSnapshot:(BOOL)forSnapshot {
   self = %orig;
@@ -36,6 +37,11 @@
 - (void)setBackgroundView:(UIView *)backgroundView {}
 - (void)setBackgroundAlpha:(double)setBackgroundAlpha { %orig(0); }
 %end
+
+%hook SBFloatingDockPlatterView
+- (UIView *)backgroundView { return nil; }
+%end
+
 %end
 
 // Hide page dots

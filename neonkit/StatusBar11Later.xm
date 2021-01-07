@@ -27,6 +27,11 @@
 - (void)updateCustomLayerWithImageName:(NSString *)name {
   UIImage *image = [self.assetManager neonImageNamed:[NSString stringWithFormat:@"Black_%d_%@", (int)self.numberOfActiveBars, name] originalImage:nil configuration:nil];
   image = [image _flatImageWithColor:self.activeColor];
+  //UIView *statusbar = MSHookIvar<UIView *>([UIApplication sharedApplication], "_statusBar");
+  //NSLog(@"%@",statusbar);
+  //NSString *classname = NSStringFromClass([MSHookIvar<id>(statusbar, "_visualProvider") class]);
+  //if ([classname isEqualToString:@"_UIStatusBarVisualProvider_LegacyPhone"]) self.customLayer.frame = CGRectMake((self.layer.bounds.size.width - image.size.width) / 2, (self.layer.bounds.size.height - image.size.height) / 2, image.size.width, image.size.height);
+  //else self.customLayer.frame = CGRectMake((self.layer.bounds.size.width - image.size.width) / 2, self.layer.bounds.size.height - image.size.height, image.size.width, image.size.height);
   self.customLayer.frame = CGRectMake((self.layer.bounds.size.width - image.size.width) / 2, (self.layer.bounds.size.height - image.size.height) / 2, image.size.width, image.size.height);
   self.customLayer.contents = (id)image.CGImage;
   if (!self.customLayer.superlayer) [self.layer addSublayer:self.customLayer];
@@ -108,7 +113,7 @@
   self.customFillLayer.mask = mask;
   [self.layer addSublayer:self.customFillLayer];
   self.customBoltLayer = [CALayer layer];
-  self.customBoltImage = [[self.assetManager neonImageNamed:@"Black_BatteryChargingAccessory" originalImage:nil configuration:nil] _flatImageWithColor:self.boltColor];
+  self.customBoltImage = [[self.assetManager neonImageNamed:@"Black_BatteryChargingAccessory" originalImage:nil configuration:nil] _flatImageWithColor:[UIColor whiteColor]];
   self.customBoltLayer.contents = (id)self.customBoltImage.CGImage;
   self.customBoltLayer.hidden = self.chargingState != 0;
   return self;

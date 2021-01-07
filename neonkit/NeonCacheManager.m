@@ -4,19 +4,18 @@
 @implementation NeonCacheManager
 
 + (void)storeCacheImage:(UIImage *)image name:(NSString *)name bundleID:(NSString *)bundleID {
-  NSString *path = [NSString stringWithFormat:@"%@/%@/%@.png", @cacheDir, bundleID, name];
+  // name the file according to the scale if needed, because some images were scaled incorrectly
+  NSInteger scale = (NSInteger)image.scale;
+  if (scale > 1) name = [NSString stringWithFormat:@"%@@%d", name, (int)scale];
+  NSString *path = [NSString stringWithFormat:@"%@/%@/%@x.png", @cacheDir, bundleID, name];
   if (![[NSFileManager defaultManager] fileExistsAtPath:path.stringByDeletingLastPathComponent])
 		[[NSFileManager defaultManager] createDirectoryAtPath:path.stringByDeletingLastPathComponent withIntermediateDirectories:YES attributes:@{NSFilePosixPermissions: @0777} error:nil];
 	[UIImagePNGRepresentation(image) writeToFile:path atomically:YES];
 }
 
 + (UIImage *)getCacheImage:(NSString *)name bundleID:(NSString *)bundleID {
-  NSString *path = [NSString stringWithFormat:@"%@/%@/%@.png", @cacheDir, bundleID, name];
-	if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
-		UIImage *image = [UIImage imageWithContentsOfFile:path];
-		return [UIImage imageWithCGImage:image.CGImage scale:[UIScreen mainScreen].scale orientation:image.imageOrientation];
-	}
-	return nil;
+  NSString *path = [NSString stringWithFormat:@"%@/%@/", @cacheDir, bundleID];
+  return [UIImage imageNamed:name inBundle:[NSBundle bundleWithPath:path]];
 }
 
 // what is this? well....
