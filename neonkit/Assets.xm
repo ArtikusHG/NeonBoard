@@ -8,23 +8,67 @@ BOOL glyphMode;
 
 static char *UIKitCarBundle;
 
-@interface UIImage (Symbol)
-@property (nonatomic) BOOL hijackIsSymbol;
-+(id)_systemImageNamed:(id)arg1 fallback:(id)arg2 ;
+NSString *customPathForName(NSString *name, NSBundle *bundle) {
+  for (NSString *theme in themes) {
+    NSMutableArray *potentialPaths = [NSMutableArray new];
+    [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Bundles/%@/", theme, bundle.bundleIdentifier]];
+    // use com.apple.springboard instead of com.apple.SpringBoardHome and such weird shits
+    if ([[NSBundle mainBundle].bundleIdentifier isEqualToString:@"com.apple.springboard"])
+      [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Bundles/com.apple.springboard/", theme]];
+    // "UIImages" folder
+    [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/UIImages/", theme]];
+    // "Folders" folder
+    [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Folders/%@/", theme, bundle.bundlePath.lastPathComponent]];
+    for (NSString *imagePath in potentialPaths) {
+      if (NSString *path = [%c(Neon) fullPathForImageNamed:name atPath:imagePath]) return path;
+      if ([name isEqualToString:@"NewsstandIconEnglish"] || [name isEqualToString:@"NewsstandIconInternational"])
+        if (NSString *path = [%c(Neon) iconPathForBundleID:@"com.apple.news" fromTheme:theme]) return path;
+    }
+  }
+  return nil;
+}
 
-@end
+UIImage *customUIImageWithName(NSString *name, NSBundle *bundle) {
+  NSString *path = customPathForName(name, bundle);
+  if (!path) return nil;
+  UIImage *custom = [UIImage imageWithContentsOfFile:path];
+  // я люблю костыли)))) (don't mind the russian; this is for the music controls on 13+)
+  //if ([@[@"backward.fill", @"forward.fill", @"pause.fill", @"play.fill"] containsObject:name] && orig) custom = [custom imageOfSize:orig.size];
+  return custom;
+  /*for (NSString *theme in themes) {
+    NSMutableArray *potentialPaths = [NSMutableArray new];
+    [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Bundles/%@/", theme, bundle.bundleIdentifier]];
+    // use com.apple.springboard instead of com.apple.SpringBoardHome and such weird shits
+    if ([[NSBundle mainBundle].bundleIdentifier isEqualToString:@"com.apple.springboard"])
+      [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Bundles/com.apple.springboard/", theme]];
+    // "UIImages" folder
+    [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/UIImages/", theme]];
+    // "Folders" folder
+    [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Folders/%@/", theme, bundle.bundlePath.lastPathComponent]];
+    for (NSString *imagePath in potentialPaths) {
+      if (NSString *path = [%c(Neon) fullPathForImageNamed:name atPath:imagePath]) {
+        UIImage *custom = [UIImage imageWithContentsOfFile:path];
 
-%hook UIImage
+        return custom;
+      }
+    }
+    // newsstand icon on ios 7 & 8 is not from an app; it's a weird custom folder. i make this customize the icon even if it's of new format (ios 9+ where it's an actual app)
+    if ([name isEqualToString:@"NewsstandIconEnglish"] || [name isEqualToString:@"NewsstandIconInternational"])
+      if (NSString *path = [%c(Neon) iconPathForBundleID:@"com.apple.news" fromTheme:theme]) path;
+  }
+  return nil;*/
+}
 
-%property (nonatomic) BOOL hijackIsSymbol;
-// MAKE CUSTOM CLASS THAT JUST DOES THIS
-- (BOOL)isSymbolImage { return self.hijackIsSymbol ? : %orig; }
-%end
-
-%hook _UIImageCGImageContent
-%new
-- (CGFloat)glyphScaleFactor { return 1.0f; }
-%end
+UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL isTemplate) {
+  if (@available(iOS 13, *)) {
+    UIImage *image;
+    if (configuration) image = [[custom imageWithConfiguration:configuration] imageByApplyingSymbolConfiguration:orig.symbolConfiguration];
+    else image = [[custom imageWithConfiguration:orig.configuration] imageByApplyingSymbolConfiguration:orig.symbolConfiguration];
+    if (isTemplate) image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    return image;
+  }
+  return custom;
+}
 
 %hook _UIAssetManager
 
@@ -33,52 +77,18 @@ static char *UIKitCarBundle;
 	// the lack of this small obvious check was why i was having a crashing issue with some apps for literally MONTHS lmao
 	if (!name) return orig;
 	if (name.length > 4 && [[name substringFromIndex:name.length - 4] isEqualToString:@".png"]) name = [name substringToIndex:name.length - 4];
-	NSBundle *bundle;
+  NSBundle *bundle;
 	if (kCFCoreFoundationVersionNumber <= 847.27) bundle = objc_getAssociatedObject(self, &UIKitCarBundle);
 	else bundle = self.bundle;
 	if (!bundle) bundle = [NSBundle mainBundle];
 	if ([bundle.bundlePath rangeOfString:@"NeonCache"].location != NSNotFound) return orig;
-	if ([NeonCacheManager isImageNameUnthemed:name bundleID:bundle.bundleIdentifier]) return orig;
-	if (UIImage *cachedImage = [NeonCacheManager getCacheImage:name bundleID:bundle.bundleIdentifier]) {
-		if (@available(iOS 13, *)) {
-			UIImage *image;
-			if (configuration) image = [[cachedImage imageWithConfiguration:configuration] imageByApplyingSymbolConfiguration:orig.symbolConfiguration];
-			else image = [[cachedImage imageWithConfiguration:orig.configuration] imageByApplyingSymbolConfiguration:orig.symbolConfiguration];
-			image.hijackIsSymbol = YES;
-			return image;
-		}
-		return cachedImage;
-		//symbolImage true; images nil (the array); imageAsset exists; uigraphicsimagerendererformat idk; traitcollection is; config/symbolconfig; flexed addimage removeimage etc are;
-		//symbol image false; images nil; imageasset exists; rendererformat too; trait collection too; config; symbolconfig no; these + methods dont!!!
-	}
-	for (NSString *theme in themes) {
-		NSMutableArray *potentialPaths = [NSMutableArray new];
-		[potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Bundles/%@/", theme, bundle.bundleIdentifier]];
-		// use com.apple.springboard instead of com.apple.SpringBoardHome and such weird shits
-		if ([[NSBundle mainBundle].bundleIdentifier isEqualToString:@"com.apple.springboard"])
-			[potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Bundles/com.apple.springboard/", theme]];
-		// "UIImages" folder
-		[potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/UIImages/", theme]];
-		// "Folders" folder
-		[potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Folders/%@/", theme, bundle.bundlePath.lastPathComponent]];
-		for (NSString *imagePath in potentialPaths) {
-			if (NSString *path = [%c(Neon) fullPathForImageNamed:name atPath:imagePath]) {
-				UIImage *custom = [UIImage imageWithContentsOfFile:path];
-				// я люблю костыли)))) (don't mind the russian; this is for the music controls on 13+)
-				if ([@[@"backward.fill", @"forward.fill", @"pause.fill", @"play.fill"] containsObject:name] && orig) custom = [custom imageOfSize:orig.size];
-				[NeonCacheManager storeCacheImage:custom name:name bundleID:bundle.bundleIdentifier];
-				if (@available(iOS 13, *)) if (configuration) return [custom imageWithConfiguration:configuration];
-				return custom;
-			}
-		}
-		// newsstand icon on ios 7 & 8 is not from an app; it's a weird custom folder. i make this customize the icon even if it's of new format (ios 9+ where it's an actual app)
-		if ([name isEqualToString:@"NewsstandIconEnglish"] || [name isEqualToString:@"NewsstandIconInternational"]) {
-			if (NSString *path = [%c(Neon) iconPathForBundleID:@"com.apple.news" fromTheme:theme]) {
-				UIImage *custom = [UIImage imageWithContentsOfFile:path];
-				[NeonCacheManager storeCacheImage:custom name:name bundleID:bundle.bundleIdentifier];
-				return custom;
-			}
-		}
+  //if ([name rangeOfString:@"system"].location != NSNotFound) NSLog(@"NEONDEBUG: %@ : %@", bundle.bundleIdentifier, name);
+  if ([NeonCacheManager isImageNameUnthemed:name bundleID:bundle.bundleIdentifier]) return orig;
+  BOOL isTemplate = ([bundle.bundleIdentifier rangeOfString:@"uikit" options:NSCaseInsensitiveSearch].location != NSNotFound || [bundle.bundleIdentifier rangeOfString:@"coreglyphs" options:NSCaseInsensitiveSearch].location != NSNotFound);
+  if (UIImage *cachedImage = [NeonCacheManager getCacheImage:name bundleID:bundle.bundleIdentifier]) return configureUIImage(cachedImage, orig, configuration, isTemplate);
+  if (UIImage *custom = customUIImageWithName(name, bundle)) {
+    [NeonCacheManager storeCacheImage:custom name:name bundleID:bundle.bundleIdentifier];
+    return configureUIImage(custom, orig, configuration, isTemplate);
   }
 	[NeonCacheManager addUnthemedImageName:name bundleID:bundle.bundleIdentifier];
   return orig;
@@ -92,20 +102,15 @@ static char *UIKitCarBundle;
 }
 %end
 
-// HIGHLIGHTED TYPE THING???
-
 // lazy to do research; just hookin everything i found in the headers lmao
 /*- (UIImage *)imageNamed:(NSString *)name {
   return [self neonImageNamed:name originalImage:%orig];
 }*/
-/*- (UIImage *)imageNamed:(NSString *)name withTrait:(id)trait {
+- (UIImage *)imageNamed:(NSString *)name withTrait:(id)trait {
   return [self neonImageNamed:name originalImage:%orig configuration:nil];
 }
 - (UIImage *)imageNamed:(NSString *)name idiom:(long long)idiom {
 	return [self neonImageNamed:name originalImage:%orig configuration:nil];
-}
-- (UIImage *)imageNamed:(NSString *)name configuration:(id)configuration {
-	return [self neonImageNamed:name originalImage:%orig configuration:configuration];
 }
 - (UIImage *)imageNamed:(NSString *)name idiom:(long long)idiom subtype:(unsigned long long)subtype {
 	return [self neonImageNamed:name originalImage:%orig configuration:nil];
@@ -113,9 +118,37 @@ static char *UIKitCarBundle;
 - (UIImage *)imageNamed:(NSString *)name scale:(double)scale idiom:(long long)idiom subtype:(unsigned long long)subtype {
 	return [self neonImageNamed:name originalImage:%orig configuration:nil];
 }
+/*- (UIImage *)imageNamed:(NSString *)name configuration:(id)configuration {
+  return [self neonImageNamed:name originalImage:%orig configuration:configuration];
+}
 - (UIImage *)imageNamed:(NSString *)name configuration:(id)configuration cachingOptions:(id)cachingOptions attachCatalogImage:(BOOL)attachCatalogImage {
-	return [self neonImageNamed:name originalImage:%orig configuration:configuration];
+  return [self neonImageNamed:name originalImage:%orig configuration:configuration];
 }*/
+
+%end
+
+
+@interface CUINamedVectorGlyph
+@property (nonatomic, retain) NSString *customPath;
+@end
+
+%group iOS13Glyphs
+
+%hook CUINamedVectorGlyph
+
+%property (nonatomic, retain) NSString *customPath;
+
+- (instancetype)initWithName:(NSString *)name scaleFactor:(CGFloat)scaleFactor deviceIdiom:(long long)idiom pointSize:(double)pointSize fromCatalog:(id)catalog usingRenditionKey:(id)usingRenditionKey fromTheme:(unsigned long long)theme {
+  self = %orig;
+  if ([NeonCacheManager isImageNameUnthemed:name bundleID:@"com.apple.CoreGlyphs"]) return self;
+  else if (NSString *path = customPathForName(name, [NSBundle bundleWithIdentifier:@"com.apple.CoreGlyphs"])) self.customPath = path;
+  else [NeonCacheManager addUnthemedImageName:name bundleID:@"com.apple.CoreGlyphs"];
+  return self;
+}
+
+- (CGImageRef)image { return [UIImage imageWithContentsOfFile:self.customPath].CGImage ? : %orig; }
+
+%end
 
 %end
 
@@ -126,4 +159,5 @@ static char *UIKitCarBundle;
 	themes = [%c(Neon) themes];
 	%init;
 	if (kCFCoreFoundationVersionNumber <= 847.27) %init(iOS7);
+  if (kCFCoreFoundationVersionNumber >= 1665.15) %init(iOS13Glyphs);
 }

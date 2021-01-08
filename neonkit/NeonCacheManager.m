@@ -15,6 +15,7 @@
 
 + (UIImage *)getCacheImage:(NSString *)name bundleID:(NSString *)bundleID {
   NSString *path = [NSString stringWithFormat:@"%@/%@/", @cacheDir, bundleID];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:path]) return nil;
   return [UIImage imageNamed:name inBundle:[NSBundle bundleWithPath:path]];
 }
 
