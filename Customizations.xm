@@ -80,6 +80,7 @@
 %end
 
 %ctor {
+  if (![[NSProcessInfo processInfo].processName isEqualToString:@"SpringBoard"]) return;
   if (!%c(Neon)) dlopen("/Library/MobileSubstrate/DynamicLibraries/NeonEngine.dylib", RTLD_LAZY);
   if (!%c(Neon)) return;
   NSDictionary *prefs = [%c(Neon) prefs];

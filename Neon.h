@@ -50,6 +50,7 @@ typedef struct SBHClockApplicationIconImageMetrics {
 @interface _UIAssetManager
 @property (nonatomic, readonly) NSBundle *bundle;
 @property (nonatomic, readonly) NSString *carFileName;
+@property (getter = _managingCoreGlyphs, nonatomic, readonly) BOOL managingCoreGlyphs;
 + (instancetype)assetManagerForBundle:(NSBundle *)bundle;
 - (UIImage *)neonImageNamed:(NSString *)name originalImage:(UIImage *)orig configuration:(id)configuration;
 @end

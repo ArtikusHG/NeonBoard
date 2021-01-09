@@ -1,5 +1,3 @@
-// why this injects into IconServices is something i *do not* know. all i know is that icon masks and a bunch of other stuff don't get applied otherwise????
-
 #include "../Neon.h"
 #include "NeonCacheManager.h"
 
@@ -118,12 +116,14 @@ UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL
 - (UIImage *)imageNamed:(NSString *)name scale:(double)scale idiom:(long long)idiom subtype:(unsigned long long)subtype {
 	return [self neonImageNamed:name originalImage:%orig configuration:nil];
 }
-/*- (UIImage *)imageNamed:(NSString *)name configuration:(id)configuration {
+- (UIImage *)imageNamed:(NSString *)name configuration:(id)configuration {
+  if (self.managingCoreGlyphs) return %orig;
   return [self neonImageNamed:name originalImage:%orig configuration:configuration];
 }
 - (UIImage *)imageNamed:(NSString *)name configuration:(id)configuration cachingOptions:(id)cachingOptions attachCatalogImage:(BOOL)attachCatalogImage {
+  if (self.managingCoreGlyphs) return %orig;
   return [self neonImageNamed:name originalImage:%orig configuration:configuration];
-}*/
+}
 
 %end
 

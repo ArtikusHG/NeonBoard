@@ -1,5 +1,8 @@
 // based on https://github.com/AnemoneTeam/Anemone-OSS. coolstar, thank you.
 
+#include "Neon.h"
+#include "UIColor+CSSColors.h"
+
 void drawStringInContextWithSettingsDict(NSString *str, CGContextRef ctx, NSDictionary *dict, CGSize imageSize, UIColor *fallbackColor, BOOL forCalendar, UIFont *defaultFont);
 
 @interface ISImage : NSObject
@@ -10,9 +13,6 @@ void drawStringInContextWithSettingsDict(NSString *str, CGContextRef ctx, NSDict
 @property (assign, nonatomic) CGSize size;
 @property (assign, nonatomic) BOOL shouldApplyMask;
 @end
-
-#include "Neon.h"
-#include "UIColor+CSSColors.h"
 
 NSMutableDictionary *dateSettings;
 NSMutableDictionary *daySettings;

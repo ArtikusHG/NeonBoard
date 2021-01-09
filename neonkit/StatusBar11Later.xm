@@ -188,9 +188,10 @@
   if (kCFCoreFoundationVersionNumber < 1443.00) return;
   if (!%c(Neon)) dlopen("/Library/MobileSubstrate/DynamicLibraries/NeonEngine.dylib", RTLD_LAZY);
   if (!%c(Neon)) return;
-  BOOL enableCellular;
-  BOOL enableWifi;
-  BOOL enableBattery;
+  // dude.... maybe just.... do = NO lol
+  BOOL enableCellular = NO;
+  BOOL enableWifi = NO;
+  BOOL enableBattery = NO;
   for (NSString *theme in [%c(Neon) themes]) {
     NSString *basePath = [NSString stringWithFormat:@"/Library/Themes/%@/UIImages/", theme];
     // wow, we can convert string to booleans

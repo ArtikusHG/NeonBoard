@@ -1,7 +1,7 @@
 Package: com.artikus.neonboard
 Name: NeonBoard
 Depends: mobilesubstrate, preferenceloader, com.rpetrich.rocketbootstrap
-Version: 1.0.2
+Version: 1.0.3
 Architecture: iphoneos-arm
 Description: A fully-featured lightweight theming engine for iOS 7 - 14.
 Maintainer: ArtikusHG
