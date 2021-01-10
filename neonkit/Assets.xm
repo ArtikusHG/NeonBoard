@@ -4,6 +4,8 @@
 NSArray *themes;
 BOOL glyphMode;
 
+NSArray *glyphNames;
+
 static char *UIKitCarBundle;
 
 NSString *customPathForName(NSString *name, NSBundle *bundle) {
@@ -26,35 +28,13 @@ NSString *customPathForName(NSString *name, NSBundle *bundle) {
   return nil;
 }
 
-UIImage *customUIImageWithName(NSString *name, NSBundle *bundle) {
+UIImage *customUIImageWithName(NSString *name, NSBundle *bundle, UIImage *orig) {
   NSString *path = customPathForName(name, bundle);
   if (!path) return nil;
   UIImage *custom = [UIImage imageWithContentsOfFile:path];
   // я люблю костыли)))) (don't mind the russian; this is for the music controls on 13+)
-  //if ([@[@"backward.fill", @"forward.fill", @"pause.fill", @"play.fill"] containsObject:name] && orig) custom = [custom imageOfSize:orig.size];
+  if ([@[@"backward.fill", @"forward.fill", @"pause.fill", @"play.fill"] containsObject:name] && orig) custom = [custom imageOfSize:orig.size];
   return custom;
-  /*for (NSString *theme in themes) {
-    NSMutableArray *potentialPaths = [NSMutableArray new];
-    [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Bundles/%@/", theme, bundle.bundleIdentifier]];
-    // use com.apple.springboard instead of com.apple.SpringBoardHome and such weird shits
-    if ([[NSBundle mainBundle].bundleIdentifier isEqualToString:@"com.apple.springboard"])
-      [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Bundles/com.apple.springboard/", theme]];
-    // "UIImages" folder
-    [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/UIImages/", theme]];
-    // "Folders" folder
-    [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Folders/%@/", theme, bundle.bundlePath.lastPathComponent]];
-    for (NSString *imagePath in potentialPaths) {
-      if (NSString *path = [%c(Neon) fullPathForImageNamed:name atPath:imagePath]) {
-        UIImage *custom = [UIImage imageWithContentsOfFile:path];
-
-        return custom;
-      }
-    }
-    // newsstand icon on ios 7 & 8 is not from an app; it's a weird custom folder. i make this customize the icon even if it's of new format (ios 9+ where it's an actual app)
-    if ([name isEqualToString:@"NewsstandIconEnglish"] || [name isEqualToString:@"NewsstandIconInternational"])
-      if (NSString *path = [%c(Neon) iconPathForBundleID:@"com.apple.news" fromTheme:theme]) path;
-  }
-  return nil;*/
 }
 
 UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL isTemplate) {
@@ -84,7 +64,7 @@ UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL
   if ([NeonCacheManager isImageNameUnthemed:name bundleID:bundle.bundleIdentifier]) return orig;
   BOOL isTemplate = ([bundle.bundleIdentifier rangeOfString:@"uikit" options:NSCaseInsensitiveSearch].location != NSNotFound || [bundle.bundleIdentifier rangeOfString:@"coreglyphs" options:NSCaseInsensitiveSearch].location != NSNotFound);
   if (UIImage *cachedImage = [NeonCacheManager getCacheImage:name bundleID:bundle.bundleIdentifier]) return configureUIImage(cachedImage, orig, configuration, isTemplate);
-  if (UIImage *custom = customUIImageWithName(name, bundle)) {
+  if (UIImage *custom = customUIImageWithName(name, bundle, orig)) {
     [NeonCacheManager storeCacheImage:custom name:name bundleID:bundle.bundleIdentifier];
     return configureUIImage(custom, orig, configuration, isTemplate);
   }
@@ -117,11 +97,11 @@ UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL
 	return [self neonImageNamed:name originalImage:%orig configuration:nil];
 }
 - (UIImage *)imageNamed:(NSString *)name configuration:(id)configuration {
-  if (self.managingCoreGlyphs) return %orig;
+  if (self.managingCoreGlyphs && [glyphNames containsObject:name]) return %orig;
   return [self neonImageNamed:name originalImage:%orig configuration:configuration];
 }
 - (UIImage *)imageNamed:(NSString *)name configuration:(id)configuration cachingOptions:(id)cachingOptions attachCatalogImage:(BOOL)attachCatalogImage {
-  if (self.managingCoreGlyphs) return %orig;
+  if (self.managingCoreGlyphs && [glyphNames containsObject:name]) return %orig;
   return [self neonImageNamed:name originalImage:%orig configuration:configuration];
 }
 
@@ -140,6 +120,7 @@ UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL
 
 - (instancetype)initWithName:(NSString *)name scaleFactor:(CGFloat)scaleFactor deviceIdiom:(long long)idiom pointSize:(double)pointSize fromCatalog:(id)catalog usingRenditionKey:(id)usingRenditionKey fromTheme:(unsigned long long)theme {
   self = %orig;
+  if (![glyphNames containsObject:name]) return %orig;
   if ([NeonCacheManager isImageNameUnthemed:name bundleID:@"com.apple.CoreGlyphs"]) return self;
   else if (NSString *path = customPathForName(name, [NSBundle bundleWithIdentifier:@"com.apple.CoreGlyphs"])) self.customPath = path;
   else [NeonCacheManager addUnthemedImageName:name bundleID:@"com.apple.CoreGlyphs"];
@@ -159,5 +140,12 @@ UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL
 	themes = [%c(Neon) themes];
 	%init;
 	if (kCFCoreFoundationVersionNumber <= 847.27) %init(iOS7);
-  if (kCFCoreFoundationVersionNumber >= 1665.15) %init(iOS13Glyphs);
+  if (kCFCoreFoundationVersionNumber >= 1665.15) {
+    // this creates a list of images that ios somehow weirdly caches, meaning if we themed them through _UIAssetManager, they would not cache properly and make various apps crash
+    // why not just use the CoreUI hook? well it doesn't theme some stuff, and it also messes up scaling by *a lot* sometimes so yeah....
+    NSMutableArray *glyphs = [NSMutableArray new];
+    for (NSString *glyph in @[@"plus", @"minus", @"ellipsis", @"checkmark", @"camera", @"circle", @"circlebadge"]) for (NSString *format in @[@"", @".fill", @".circle", @".circle.fill"]) [glyphs addObject:[glyph stringByAppendingString:format]];
+    glyphNames = [glyphs copy];
+    %init(iOS13Glyphs);
+  }
 }
