@@ -32,8 +32,9 @@ UIImage *customUIImageWithName(NSString *name, NSBundle *bundle, UIImage *orig) 
   NSString *path = customPathForName(name, bundle);
   if (!path) return nil;
   UIImage *custom = [UIImage imageWithContentsOfFile:path];
-  // я люблю костыли)))) (don't mind the russian; this is for the music controls on 13+)
-  if ([@[@"backward.fill", @"forward.fill", @"pause.fill", @"play.fill"] containsObject:name] && orig) custom = [custom imageOfSize:orig.size];
+  // я люблю костыли)))) (don't mind the russian; this is for the music controls on 13+) (and the phone call button)
+  NSArray *resize = @[@"backward.fill", @"forward.fill", @"pause.fill", @"play.fill", @"phone", @"phone.circle.fill", @"phone.down.fill", @"phone.down", @"phone.fill", @"phone.fill.arrow.down.left", @"phone.fill.arrow.up.right"];
+  if ([resize containsObject:name] && orig) custom = [custom imageOfSize:orig.size];
   return custom;
 }
 

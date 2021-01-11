@@ -14,6 +14,7 @@ NSString *shadowPath;
 %new
 - (void)neon_setupShadow {
   UIImage *shadowImage = [UIImage imageWithContentsOfFile:shadowPath];
+  // TODO FIX SCALING
   self.shadowLayer = [CALayer layer];
   self.shadowLayer.frame = CGRectMake(0, 0, shadowImage.size.width, shadowImage.size.height);
   self.shadowLayer.position = CGPointMake(self.layer.bounds.size.width / 2, self.layer.bounds.size.width / 2);

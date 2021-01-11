@@ -142,7 +142,6 @@ NSString *backgroundBasePath;
     if (!backgroundBasePath && [%c(Neon) fullPathForImageNamed:@"ANEMFolderBackground" atPath:path]) backgroundBasePath = path;
     if (iconBasePath && backgroundBasePath) break;
   }
-  NSLog(@"%@", iconBasePath);
   // we init this anyway bc there's the "ANEMFolderIconBG-FolderName" which is really crappy to detect
   if (iconBasePath) {
     if (kCFCoreFoundationVersionNumber >= 1665.15) %init(FolderIcon13Later);
