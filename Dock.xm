@@ -1,5 +1,15 @@
 #include <Neon.h>
 
+@interface SBDockView : UIView
+@property (nonatomic, retain) CALayer *maskLayer;
+@property (nonatomic, retain) CALayer *overlayLayer;
+@property (nonatomic, retain) UIImage *maskImage;
+@property (nonatomic, retain) UIImage *overlayImage;
+@end
+
+@interface SBFloatingDockPlatterView : SBDockView
+@end
+
 CGFloat dockCornerRadius;
 CGFloat customDockY;
 NSString *maskPath;
@@ -11,30 +21,7 @@ NSString *overlayPath;
 %end
 %end
 
-@interface SBDockView : UIView
-@property (nonatomic, retain) CALayer *maskLayer;
-@property (nonatomic, retain) CALayer *overlayLayer;
-@property (nonatomic, retain) UIImage *maskImage;
-@property (nonatomic, retain) UIImage *overlayImage;
-@end
-
-@interface CALayer (Backdrop)
-@property (getter = isEnabled) BOOL enabled;
-@end
-
-%group CustomBackground
-%hook SBDockView
-
-%property (nonatomic, retain) CALayer *maskLayer;
-%property (nonatomic, retain) CALayer *overlayLayer;
-%property (nonatomic, retain) UIImage *maskImage;
-%property (nonatomic, retain) UIImage *overlayImage;
-
-- (instancetype)initWithDockListView:(id)dockListView forSnapshot:(BOOL)forSnapshot {
-  self = %orig;
-  // dat one small line at the top that appears when u mask/replace the background
-  MSHookIvar<UIView *>(self, "_highlightView").hidden = YES;
-  UIView *backgroundView = MSHookIvar<UIView *>(self, "_backgroundView");
+void addCustomBackgroundToInstance(SBDockView *self) {
   if (overlayPath) {
     NSArray *overlayNames = @[@"ModernDockOverlay", @"SBDockBG", @"SBDock"];
     for (NSString *name in overlayNames) {
@@ -43,60 +30,84 @@ NSString *overlayPath;
         self.overlayImage = [UIImage imageWithCGImage:self.overlayImage.CGImage scale:[UIScreen mainScreen].scale orientation:UIImageOrientationUp];
         self.overlayLayer = [CALayer layer];
         self.overlayLayer.contents = (id)self.overlayImage.CGImage;
+        MSHookIvar<UIView *>(self, "_backgroundView").hidden = YES;
+        [self.layer insertSublayer:self.overlayLayer atIndex:0];
         break;
       }
     }
-    [backgroundView.layer addSublayer:self.overlayLayer];
   }
-  if (maskPath) {
+  if (maskPath && !overlayPath) {
     NSArray *maskNames = @[@"ModernDockMask", @"SBDockMask"];
     for (NSString *name in maskNames) {
       if ((self.maskImage = [UIImage imageNamed:name inBundle:[NSBundle bundleWithPath:maskPath]])) {
         self.maskImage = [UIImage imageWithCGImage:self.maskImage.CGImage scale:[UIScreen mainScreen].scale orientation:UIImageOrientationUp];
         self.maskLayer = [CALayer layer];
         self.maskLayer.contents = (id)self.maskImage.CGImage;
+        MSHookIvar<UIView *>(self, "_backgroundView").layer.mask = self.maskLayer;
         break;
       }
     }
-  } else if (self.overlayImage) {
-    self.maskLayer = [CALayer layer];
-    self.maskLayer.contents = (id)[[self.overlayImage copy] CGImage]; // same image to multiple layer doesn't work, so copy
   }
-  backgroundView.layer.mask = self.maskLayer;
-  if ([backgroundView.layer respondsToSelector:@selector(setEnabled:)]) backgroundView.layer.enabled = NO;
-  return self;
 }
 
-// i honestly don't even give a shit anymore. roast me on discord for hooking layoutSubviews. i dare you, do it.
-- (void)layoutSubviews {
-  %orig;
-  UIView *backgroundView = MSHookIvar<UIView *>(self, "_backgroundView");
-  // so i'm probably gonna forget what i even meant to do here if i have to come back to this in a while, SO
-  // if the width is bigger than the width of the dock view (so basically, the width of the screen), that means it doesn't fit. so, we make it fit (second line of code inside if statement)
-  // but before that, we need to find out by how much we changed the width so that we don't end up with a dock background that looks like a shitty abstract russian meme. this is what the first line does: divide the bad width by the good one. and adjust the height to that.
-  // hopefully though i'll NEVER have to come back to this module (or at least this part of the module) lmfaoooo
-  CGFloat width = self.overlayImage.size.width;
-  CGFloat height = self.overlayImage.size.height;
+void fixupFramesForInstance(SBDockView *self) {
+  UIImage *image;
+  if (self.overlayImage) image = self.overlayImage;
+  else if (self.maskImage) image = self.maskImage;
+  else return;
+  CGFloat width = image.size.width;
+  CGFloat height = image.size.height;
   if (width > self.bounds.size.width) {
     height = height * (self.bounds.size.width / width);
     width = self.bounds.size.width;
   }
-  CGRect frame = CGRectMake((backgroundView.bounds.size.width - self.bounds.size.width) / 2 + backgroundView.bounds.origin.x, self.bounds.size.height - self.overlayImage.size.height + customDockY, width, height);
-  // this one also worked (*ahem* on my device) but i KINDA DIDNT LIKE THE part where its " / 4 + 2" that i did for ABSOLUTELY NO REASON, based exclusively on "this shit looks kinda off, lets divide it more and see if that helps"
-  //CGRect frame = CGRectMake((backgroundView.bounds.size.width - self.bounds.size.width) / 4 + 2, self.bounds.size.height - self.overlayImage.size.height + customDockY, width, height);
-  self.maskLayer.frame = frame;
-  self.overlayLayer.frame = frame;
+  CGRect frame = CGRectMake((self.bounds.size.width - width) / 2, (self.bounds.size.height - height) / 2 + customDockY, width, height);
+  if (self.maskLayer) self.maskLayer.frame = frame;
+  if (self.overlayLayer) self.overlayLayer.frame = frame;
 }
 
-- (void)setBackgroundView:(UIView *)backgroundView {
+%group CustomBackground
+
+%hook SBFloatingDockPlatterView
+%property (nonatomic, retain) CALayer *maskLayer;
+%property (nonatomic, retain) CALayer *overlayLayer;
+%property (nonatomic, retain) UIImage *maskImage;
+%property (nonatomic, retain) UIImage *overlayImage;
+//- (void)setBackgroundView:(UIView *)view {}
+- (instancetype)initWithFrame:(CGRect)frame {
+  self = %orig;
+  addCustomBackgroundToInstance(self);
+  return self;
+}
+- (instancetype)initWithReferenceHeight:(CGFloat)height maximumContinuousCornerRadius:(CGFloat)radius {
+  self = %orig;
+  addCustomBackgroundToInstance(self);
+  return self;
+}
+- (void)layoutSubviews {
   %orig;
-  if (self.overlayLayer) {
-    [backgroundView.layer addSublayer:self.overlayLayer];
-    backgroundView.layer.enabled = NO;
-  } else if (self.maskLayer) backgroundView.layer.mask = self.maskLayer;
+  fixupFramesForInstance(self);
 }
-
 %end
+
+%hook SBDockView
+%property (nonatomic, retain) CALayer *maskLayer;
+%property (nonatomic, retain) CALayer *overlayLayer;
+%property (nonatomic, retain) UIImage *maskImage;
+%property (nonatomic, retain) UIImage *overlayImage;
+//- (void)setBackgroundView:(UIView *)view {}
+- (instancetype)initWithDockListView:(id)dockListView forSnapshot:(BOOL)forSnapshot {
+  self = %orig;
+  MSHookIvar<UIView *>(self, "_highlightView").hidden = YES;
+  addCustomBackgroundToInstance(self);
+  return self;
+}
+- (void)layoutSubviews {
+  %orig;
+  fixupFramesForInstance(self);
+}
+%end
+
 %end
 
 %ctor {

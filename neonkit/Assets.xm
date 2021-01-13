@@ -53,7 +53,7 @@ UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL
 
 %new
 - (UIImage *)neonImageNamed:(NSString *)name originalImage:(UIImage *)orig configuration:(id)configuration {
-	// the lack of this small obvious check was why i was having a crashing issue with some apps for literally MONTHS lmao
+  // the lack of this small obvious check was why i was having a crashing issue with some apps for literally MONTHS lmao
 	if (!name) return orig;
 	if (name.length > 4 && [[name substringFromIndex:name.length - 4] isEqualToString:@".png"]) name = [name substringToIndex:name.length - 4];
   NSBundle *bundle;
@@ -61,7 +61,6 @@ UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL
 	else bundle = self.bundle;
 	if (!bundle) bundle = [NSBundle mainBundle];
 	if ([bundle.bundlePath rangeOfString:@"NeonCache"].location != NSNotFound) return orig;
-  //if ([name rangeOfString:@"system"].location != NSNotFound) NSLog(@"NEONDEBUG: %@ : %@", bundle.bundleIdentifier, name);
   if ([NeonCacheManager isImageNameUnthemed:name bundleID:bundle.bundleIdentifier]) return orig;
   BOOL isTemplate = ([bundle.bundleIdentifier rangeOfString:@"uikit" options:NSCaseInsensitiveSearch].location != NSNotFound || [bundle.bundleIdentifier rangeOfString:@"coreglyphs" options:NSCaseInsensitiveSearch].location != NSNotFound);
   if (UIImage *cachedImage = [NeonCacheManager getCacheImage:name bundleID:bundle.bundleIdentifier]) return configureUIImage(cachedImage, orig, configuration, isTemplate);

@@ -111,7 +111,7 @@
   self.customFillLayer.mask = mask;
   [self.layer addSublayer:self.customFillLayer];
   self.customBoltLayer = [CALayer layer];
-  self.customBoltImage = [[self.assetManager neonImageNamed:@"Black_BatteryChargingAccessory" originalImage:nil configuration:nil] _flatImageWithColor:[UIColor whiteColor]];
+  self.customBoltImage = [[self.assetManager neonImageNamed:@"Black_BatteryChargingAccessory" originalImage:nil configuration:nil] _flatImageWithColor:self.bodyColor];
   self.customBoltLayer.contents = (id)self.customBoltImage.CGImage;
   self.customBoltLayer.hidden = self.chargingState != 0;
   return self;

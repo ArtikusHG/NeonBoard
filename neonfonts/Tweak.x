@@ -17,15 +17,16 @@ NSString *customFontPathForPath(NSString *path) {
 }
 
 NSArray *CGFontCreateFontsWithPath(NSString *path);
-%hookf(NSArray *, CGFontCreateFontsWithPath, NSString *path) { return %orig(customFontPathForPath(path) ? : path); }
-%hookf(id, pogchampWOOO, NSString *path, NSString *name) { return %orig(customFontPathForPath(path) ? : path, name); }
+%group NormalVersions %hookf(NSArray *, CGFontCreateFontsWithPath, NSString *path) { return %orig(customFontPathForPath(path) ? : path); } %end
+%group FrickyStupids %hookf(id, pogchampWOOO, NSString *path, NSString *name) { return %orig(customFontPathForPath(path) ? : path, name); } %end
 
 %ctor {
-  if (kCFCoreFoundationVersionNumber >= 1751.108) {
-    MSImageRef image = MSGetImageByName("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics");
-    %init(pogchampWOOO = MSFindSymbol(image, "_CGFontCreateWithPathAndName"));
-  }
   if (!%c(Neon)) dlopen("/Library/MobileSubstrate/DynamicLibraries/NeonEngine.dylib", RTLD_LAZY);
   if (!%c(Neon)) return;
   fontCache = [NSCache new];
+  %init(NormalVersions);
+  if (kCFCoreFoundationVersionNumber >= 1751.108) {
+    MSImageRef image = MSGetImageByName("/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics");
+    %init(FrickyStupids, pogchampWOOO = MSFindSymbol(image, "_CGFontCreateWithPathAndName"));
+  }
 }
