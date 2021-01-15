@@ -23,7 +23,12 @@ NSString *overrideTheme;
 
 UIImage *clockImageNamed(NSString *name) {
   if (overrideTheme) {
-    NSString *path = [%c(Neon) fullPathForImageNamed:name atPath:[NSString stringWithFormat:@"/Library/Themes/%@/Bundles/com.apple.springboard/", overrideTheme]];
+    NSString *path;
+    if ([overrideTheme rangeOfString:@"/"].location != NSNotFound && [name isEqualToString:@"ClockIconBackgroundSquare"]) {
+      NSArray *things = [overrideTheme componentsSeparatedByString:@"/"];
+      path = [%c(Neon) iconPathForBundleID:things[1] fromTheme:things[0]];
+    }
+    else path = [%c(Neon) fullPathForImageNamed:name atPath:[NSString stringWithFormat:@"/Library/Themes/%@/Bundles/com.apple.springboard/", overrideTheme]];
     if (path) return [UIImage imageWithContentsOfFile:path];
   } else {
     for (NSString *theme in themes) {

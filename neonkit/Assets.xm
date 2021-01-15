@@ -19,6 +19,7 @@ NSString *customPathForName(NSString *name, NSBundle *bundle) {
     [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/UIImages/", theme]];
     // "Folders" folder
     [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Folders/%@/", theme, bundle.bundlePath.lastPathComponent]];
+    [potentialPaths addObject:[NSString stringWithFormat:@"/Library/Themes/%@/Folders/%@/", theme, bundle.bundlePath.lastPathComponent.stringByDeletingPathExtension]];
     for (NSString *imagePath in potentialPaths) {
       if (NSString *path = [%c(Neon) fullPathForImageNamed:name atPath:imagePath]) return path;
       if ([name isEqualToString:@"NewsstandIconEnglish"] || [name isEqualToString:@"NewsstandIconInternational"])
@@ -34,7 +35,8 @@ UIImage *customUIImageWithName(NSString *name, NSBundle *bundle, UIImage *orig) 
   UIImage *custom = [UIImage imageWithContentsOfFile:path];
   // я люблю костыли)))) (don't mind the russian; this is for the music controls on 13+) (and the phone call button)
   NSArray *resize = @[@"backward.fill", @"forward.fill", @"pause.fill", @"play.fill", @"phone", @"phone.circle.fill", @"phone.down.fill", @"phone.down", @"phone.fill", @"phone.fill.arrow.down.left", @"phone.fill.arrow.up.right"];
-  if ([resize containsObject:name] && orig) custom = [custom imageOfSize:orig.size];
+  // idk why but we have to do this scale pepega cuz its 2x smaller if not
+  if ([resize containsObject:name] && orig) custom = [custom imageOfSize:CGSizeMake(orig.size.width * orig.scale, orig.size.height * orig.scale)];
   return custom;
 }
 

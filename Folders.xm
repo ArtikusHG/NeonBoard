@@ -42,12 +42,21 @@ NSString *backgroundBasePath;
 %property (nonatomic, retain) UIImageView *neonCustomBackgroundView;
 
 - (void)setBackgroundView:(UIView *)view {
+  if (self.neonCustomBackgroundView) %orig(self.neonCustomBackgroundView);
   UIImage *customImage = [UIImage imageNamed:@"ANEMFolderIconBG" inBundle:[NSBundle bundleWithPath:iconBasePath]];
   if (customImage && !self.neonCustomBackgroundView) {
     self.neonCustomBackgroundView = [[UIImageView alloc] initWithImage:customImage];
+    self.neonCustomBackgroundView.frame = view.frame;
     %orig(self.neonCustomBackgroundView);
   } else %orig;
 }
+
+- (void)layoutSubviews {
+  %orig;
+  [self setBackgroundView:self.neonCustomBackgroundView];
+}
+
+//- (BOOL)hasCustomBackgroundView { return NO; }
 
 /*- (void)setIcon:(SBFolderIcon *)icon location:(id)location animated:(BOOL)animated {
   %orig;

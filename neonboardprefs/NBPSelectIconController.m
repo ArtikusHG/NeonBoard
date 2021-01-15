@@ -45,7 +45,15 @@
 	    [thisIcon setProperty:@70 forKey:@"height"];
 	    thisIcon.buttonAction = @selector(setOverride:);
 			[_specifiers addObject:thisIcon];
-		} else [_specifiers addObject:[PSSpecifier groupSpecifierWithName:@"Start searching"]];
+		}
+    if ([self.specifier propertyForKey:@"themePath"]) {
+ 			[_specifiers addObject:[PSSpecifier groupSpecifierWithName:@"All icons from the pack"]];
+ 			if ([self.specifier propertyForKey:@"thisIcon"] && !self.iconSpecifiers) {
+ 				PSSpecifier *loadButton = [PSSpecifier preferenceSpecifierNamed:@"Load all icons" target:self set:nil get:nil detail:nil cell:PSButtonCell edit:nil];
+ 				loadButton.buttonAction = @selector(loadIcons:);
+ 				[_specifiers addObject:loadButton];
+ 			} else self.shouldAutoLoadIcons = YES;
+ 		}
 		self.bundleIDs = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self.specifier propertyForKey:@"themePath"] error:nil] mutableCopy];
 		for (int i = self.bundleIDs.count - 1; i >= 0; i--) {
 			NSString *file = self.bundleIDs[i];
@@ -63,6 +71,11 @@
 	if (self.iconSpecifiers.count != 0) [_specifiers addObjectsFromArray:self.iconSpecifiers];
   return _specifiers;
 }
+
+- (void)viewDidAppear:(BOOL)didAppear {
+ 	[super viewDidAppear:didAppear];
+ 	if (self.shouldAutoLoadIcons) [self loadIcons:nil];
+ }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
@@ -112,6 +125,62 @@
 		});
 	});
 }
+
+- (void)loadIcons:(id)sender {
+ 	if (sender) {
+ 		[_specifiers removeLastObject];
+ 		[self.table reloadData];
+ 	}
+ 	NSMutableArray *bundleIDs = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self.specifier propertyForKey:@"themePath"] error:nil] mutableCopy];
+ 	if (!bundleIDs || bundleIDs.count == 0) return;
+ 	for (int i = bundleIDs.count - 1; i >= 0; i--) {
+ 		NSString *file = bundleIDs[i];
+ 		if (file.length < 5 || ![file.pathExtension isEqualToString:@"png"]) continue;
+ 		file = [file stringByDeletingPathExtension];
+ 		if (file.length > 6 && [[file substringFromIndex:file.length - 6] isEqualToString:@"-large"]) file = [file substringToIndex:file.length - 6];
+ 		for (NSString *character in @[@"@", @"~"]) {
+ 			NSRange range = [file rangeOfString:character options:NSBackwardsSearch];
+ 			if (range.location != NSNotFound) file = [file substringToIndex:range.location];
+ 		}
+ 		[bundleIDs replaceObjectAtIndex:i withObject:file];
+ 	}
+ 	[bundleIDs setArray:[[NSSet setWithArray:bundleIDs] allObjects]];
+ 	id progressAlert;
+ 	if (@available(iOS 8, *)) {
+ 		progressAlert = [UIAlertController alertControllerWithTitle:@"Loading icons, be patient..." message:@"" preferredStyle:UIAlertControllerStyleAlert];
+ 		[self presentViewController:progressAlert animated:YES completion:nil];
+ 	} else {
+ 		progressAlert = [[UIAlertView alloc] initWithTitle:@"Loading icons, be patient..." message:@"" delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+ 		[progressAlert show];
+ 	}
+ 	self.iconSpecifiers = [NSMutableArray new];
+ 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+ 		NSInteger done = 0;
+ 		for (NSString *bundleID in bundleIDs) {
+ 			PSSpecifier *specifier = [PSSpecifier preferenceSpecifierNamed:bundleID target:self set:nil get:nil detail:nil cell:PSButtonCell edit:nil];
+ 			[specifier setProperty:[NBPSelectIconCell class] forKey:@"cellClass"];
+ 			[specifier setProperty:bundleID forKey:@"iconBundleID"];
+ 			[specifier setProperty:@70 forKey:@"height"];
+ 			specifier.buttonAction = @selector(setOverride:);
+ 			// grab icon
+ 			NSString *path = [NSClassFromString(@"Neon") iconPathForBundleID:bundleID fromTheme:[self.specifier propertyForKey:@"themeName"]];
+ 			UIImage *icon = [UIImage imageWithContentsOfFile:path] ? : [UIImage imageNamed:@"DefaultIcon-60" inBundle:[NSBundle bundleWithIdentifier:@"com.apple.mobileicons.framework"]];
+ 			[specifier setProperty:iconForCellFromIcon(icon, CGSizeMake(60, 60)) forKey:@"iconImage"];
+ 			[self.iconSpecifiers addObject:specifier];
+ 			done++;
+ 			dispatch_async(dispatch_get_main_queue(), ^{
+       	[progressAlert setMessage:[NSString stringWithFormat:@"Loading icon %ld of %lu...", (long)done, (unsigned long)bundleIDs.count]];
+       });
+ 		}
+ 		[_specifiers addObjectsFromArray:self.iconSpecifiers];
+ 		//self.originalSpecifiers = [_specifiers mutableCopy];
+ 		dispatch_async(dispatch_get_main_queue(), ^{
+ 			if (@available(iOS 8, *)) [self dismissViewControllerAnimated:YES completion:nil];
+ 			else [progressAlert dismissWithClickedButtonIndex:-1 animated:YES];
+ 			[self.table reloadData];
+ 		});
+ 	});
+ }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
 	self.iconSpecifiers = nil;
