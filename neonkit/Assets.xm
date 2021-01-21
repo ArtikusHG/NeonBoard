@@ -29,23 +29,31 @@ NSString *customPathForName(NSString *name, NSBundle *bundle) {
   return nil;
 }
 
+UIImage *rescaleImageIfNeeded(UIImage *custom, UIImage *orig, NSString *name) {
+  if (!orig) return custom;
+  // я люблю костыли)))) (don't mind the russian; this is for the music controls on 13+) (and the phone call button)
+  NSArray *resize = @[@"chevron.forward", @"backward.fill", @"forward.fill", @"pause.fill", @"play.fill", @"phone", @"phone.fill", @"phone.circle.fill", @"phone.down.fill", @"phone.down", @"phone.fill.arrow.down.left", @"phone.fill.arrow.up.right", @"UISwitchKnob"];
+  if (orig && [resize containsObject:name]) custom = [custom imageOfSize:orig.size];
+  return custom;
+}
+
 UIImage *customUIImageWithName(NSString *name, NSBundle *bundle, UIImage *orig) {
   NSString *path = customPathForName(name, bundle);
   if (!path) return nil;
-  UIImage *custom = [UIImage imageWithContentsOfFile:path];
-  // я люблю костыли)))) (don't mind the russian; this is for the music controls on 13+) (and the phone call button)
-  NSArray *resize = @[@"backward.fill", @"forward.fill", @"pause.fill", @"play.fill", @"phone", @"phone.circle.fill", @"phone.down.fill", @"phone.down", @"phone.fill", @"phone.fill.arrow.down.left", @"phone.fill.arrow.up.right"];
-  // idk why but we have to do this scale pepega cuz its 2x smaller if not
-  if ([resize containsObject:name] && orig) custom = [custom imageOfSize:CGSizeMake(orig.size.width * orig.scale, orig.size.height * orig.scale)];
-  return custom;
+  return rescaleImageIfNeeded([UIImage imageWithContentsOfFile:path], orig, name);
 }
 
 UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL isTemplate) {
   if (@available(iOS 13, *)) {
-    UIImage *image;
-    if (configuration) image = [[custom imageWithConfiguration:configuration] imageByApplyingSymbolConfiguration:orig.symbolConfiguration];
-    else image = [[custom imageWithConfiguration:orig.configuration] imageByApplyingSymbolConfiguration:orig.symbolConfiguration];
+    UIImage *image = custom;
     if (isTemplate) image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    //if (orig.symbolConfiguration) image = [image.imageAsset imageWithConfiguration:orig.configuration];
+    if (orig.symbolConfiguration) image = [[image imageWithConfiguration:orig.configuration] imageByApplyingSymbolConfiguration:orig.symbolConfiguration];
+    else {
+      if (configuration) image = [custom imageWithConfiguration:configuration];
+      else image = [custom imageWithConfiguration:orig.configuration];
+    }
+    //image.neonOrigImage = orig;
     return image;
   }
   return custom;
@@ -56,7 +64,7 @@ UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL
 %new
 - (UIImage *)neonImageNamed:(NSString *)name originalImage:(UIImage *)orig configuration:(id)configuration {
   // the lack of this small obvious check was why i was having a crashing issue with some apps for literally MONTHS lmao
-	if (!name) return orig;
+  if (!name) return orig;
 	if (name.length > 4 && [[name substringFromIndex:name.length - 4] isEqualToString:@".png"]) name = [name substringToIndex:name.length - 4];
   NSBundle *bundle;
 	if (kCFCoreFoundationVersionNumber <= 847.27) bundle = objc_getAssociatedObject(self, &UIKitCarBundle);
@@ -65,7 +73,10 @@ UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL
 	if ([bundle.bundlePath rangeOfString:@"NeonCache"].location != NSNotFound) return orig;
   if ([NeonCacheManager isImageNameUnthemed:name bundleID:bundle.bundleIdentifier]) return orig;
   BOOL isTemplate = ([bundle.bundleIdentifier rangeOfString:@"uikit" options:NSCaseInsensitiveSearch].location != NSNotFound || [bundle.bundleIdentifier rangeOfString:@"coreglyphs" options:NSCaseInsensitiveSearch].location != NSNotFound);
-  if (UIImage *cachedImage = [NeonCacheManager getCacheImage:name bundleID:bundle.bundleIdentifier]) return configureUIImage(cachedImage, orig, configuration, isTemplate);
+  if (UIImage *cachedImage = [NeonCacheManager getCacheImage:name bundleID:bundle.bundleIdentifier]) {
+    cachedImage = rescaleImageIfNeeded(cachedImage, orig, name);
+    return configureUIImage(cachedImage, orig, configuration, isTemplate);
+  }
   if (UIImage *custom = customUIImageWithName(name, bundle, orig)) {
     [NeonCacheManager storeCacheImage:custom name:name bundleID:bundle.bundleIdentifier];
     return configureUIImage(custom, orig, configuration, isTemplate);
@@ -98,17 +109,16 @@ UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL
 - (UIImage *)imageNamed:(NSString *)name scale:(double)scale idiom:(long long)idiom subtype:(unsigned long long)subtype {
 	return [self neonImageNamed:name originalImage:%orig configuration:nil];
 }
-- (UIImage *)imageNamed:(NSString *)name configuration:(id)configuration {
+/*- (UIImage *)imageNamed:(NSString *)name configuration:(id)configuration {
   if (self.managingCoreGlyphs && [glyphNames containsObject:name]) return %orig;
   return [self neonImageNamed:name originalImage:%orig configuration:configuration];
-}
-- (UIImage *)imageNamed:(NSString *)name configuration:(id)configuration cachingOptions:(id)cachingOptions attachCatalogImage:(BOOL)attachCatalogImage {
+}*/
+- (UIImage *)imageNamed:(NSString *)name configuration:(id)configuration cachingOptions:(unsigned long long)cachingOptions attachCatalogImage:(BOOL)attachCatalogImage {
   if (self.managingCoreGlyphs && [glyphNames containsObject:name]) return %orig;
   return [self neonImageNamed:name originalImage:%orig configuration:configuration];
 }
 
 %end
-
 
 @interface CUINamedVectorGlyph
 @property (nonatomic, retain) NSString *customPath;
@@ -147,6 +157,7 @@ UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL
     // why not just use the CoreUI hook? well it doesn't theme some stuff, and it also messes up scaling by *a lot* sometimes so yeah....
     NSMutableArray *glyphs = [NSMutableArray new];
     for (NSString *glyph in @[@"plus", @"minus", @"ellipsis", @"checkmark", @"camera", @"circle", @"circlebadge"]) for (NSString *format in @[@"", @".fill", @".circle", @".circle.fill"]) [glyphs addObject:[glyph stringByAppendingString:format]];
+    [glyphs addObject:@"airplane"];
     glyphNames = [glyphs copy];
     %init(iOS13Glyphs);
   }

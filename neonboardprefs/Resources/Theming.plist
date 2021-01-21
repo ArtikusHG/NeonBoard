@@ -108,6 +108,26 @@
       <key>showValue</key>
       <true/>
     </dict>
+      <dict>
+  			<key>cell</key>
+  			<string>PSGroupCell</string>
+  			<key>label</key>
+  			<string>Dock scale factor</string>
+        <key>footerText</key>
+        <string>Example: a dock scale factor of 2 means the dock will be resized by 2 times (e.g. will be 2 times larger)</string>
+  		</dict>
+      <dict>
+        <key>cell</key>
+        <string>PSSliderCell</string>
+        <key>key</key>
+        <string>kDockScale</string>
+        <key>min</key>
+        <real>1.0</real>
+        <key>max</key>
+        <real>2.0</real>
+        <key>showValue</key>
+        <true/>
+      </dict>
   </array>
 </dict>
 </plist>

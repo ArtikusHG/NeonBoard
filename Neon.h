@@ -78,6 +78,7 @@ typedef struct SBHClockApplicationIconImageMetrics {
 + (NSArray *)themes;
 + (NSDictionary *)prefs;
 + (NSDictionary *)overrideThemes;
++ (NSMutableArray *)potentialFilenamesForName:(NSString *)name;
 + (NSString *)iconPathForBundleID:(NSString *)bundleID;
 + (NSString *)iconPathForBundleID:(NSString *)bundleID fromTheme:(NSString *)theme;
 + (NSString *)fullPathForImageNamed:(NSString *)name atPath:(NSString *)basePath;

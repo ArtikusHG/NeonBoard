@@ -73,12 +73,10 @@ CGImageRef *CGImageSourceCreateWithFile(NSString *path, NSDictionary *options);
 }
 
 %ctor {
-	//NSLog(@"NEONDEBUG: proc name: %@; bundleid: %@", [[NSProcessInfo processInfo] processName], [NSBundle mainBundle].bundleIdentifier);
 	if (!%c(Neon)) dlopen("/Library/MobileSubstrate/DynamicLibraries/NeonEngine.dylib", RTLD_LAZY);
   if (!%c(Neon) && ![%c(Neon) themes]) return;
 	themes = [%c(Neon) themes];
   glyphMode = [[[%c(Neon) prefs] objectForKey:@"kGlyphMode"] boolValue];
 	pathCache = [NSCache new];
 	%init;
-
 }

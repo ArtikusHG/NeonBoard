@@ -74,18 +74,23 @@ CFPropertyListRef MGCopyAnswer(CFStringRef property);
   return potentialFilenames;
 }
 
-// Usage: fullPathForImageNamed:@"SBBadgeBG" atPath:@"/Library/Themes/Viola Badges.theme/Bundles/com.apple.springboard/" (last symbol of basePath should be a slash (/)!)
-+ (NSString *)fullPathForImageNamed:(NSString *)name atPath:(NSString *)basePath {
-  if (!name || !basePath) return nil;
++ (NSMutableArray *)potentialFilenamesForName:(NSString *)name {
   NSMutableArray *potentialFilenames = [NSMutableArray new];
-  [potentialFilenames addObject:[name stringByAppendingString:@"-large.png"]];
   NSString *device = ([self deviceIsIpad]) ? @"~ipad" : @"~iphone";
   NSInteger scale = [[self deviceScale] integerValue];
   NSMutableArray *numericScales = [NSMutableArray arrayWithObjects:@1, @2, @3, nil];
+  // remove the native scale of the device and insert to beginning so that it's priority in the for loop
   [numericScales removeObject:[NSNumber numberWithInteger:scale]];
   [numericScales insertObject:[NSNumber numberWithInteger:scale] atIndex:0];
   for (NSNumber *loopScale in numericScales) [potentialFilenames addObjectsFromArray:[self potentialFilenamesForName:name deviceString:device scale:[loopScale integerValue]]];
+  return potentialFilenames;
+}
 
+// Usage: fullPathForImageNamed:@"SBBadgeBG" atPath:@"/Library/Themes/Viola Badges.theme/Bundles/com.apple.springboard/" (last symbol of basePath should be a slash (/)!)
++ (NSString *)fullPathForImageNamed:(NSString *)name atPath:(NSString *)basePath {
+  if (!name || !basePath) return nil;
+  NSMutableArray *potentialFilenames = [self potentialFilenamesForName:name];
+  [potentialFilenames insertObject:[name stringByAppendingString:@"-large.png"] atIndex:0];
   for (NSString *filename in potentialFilenames) {
     NSString *fullFilename = [basePath stringByAppendingString:filename];
     if ([[NSFileManager defaultManager] fileExistsAtPath:fullFilename isDirectory:nil]) return fullFilename;

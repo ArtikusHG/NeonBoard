@@ -12,6 +12,7 @@
 
 CGFloat dockCornerRadius;
 CGFloat customDockY;
+CGFloat dockScale;
 NSString *maskPath;
 NSString *overlayPath;
 
@@ -61,6 +62,8 @@ void fixupFramesForInstance(SBDockView *self) {
     height = height * (self.bounds.size.width / width);
     width = self.bounds.size.width;
   }
+  width *= dockScale;
+  height *= dockScale;
   CGRect frame = CGRectMake((self.bounds.size.width - width) / 2, (self.bounds.size.height - height) / 2 + customDockY, width, height);
   if (self.maskLayer) self.maskLayer.frame = frame;
   if (self.overlayLayer) self.overlayLayer.frame = frame;
@@ -125,7 +128,6 @@ void fixupFramesForInstance(SBDockView *self) {
       break;
     }
   }
-  customDockY = [[[%c(Neon) prefs] objectForKey:@"kDockY"] floatValue];
   for (NSString *theme in [%c(Neon) themes]) {
     NSString *basePath = [NSString stringWithFormat:@"/Library/Themes/%@/Bundles/com.apple.springboard/", theme];
     if (!maskPath) for (NSString *name in maskNames) if ([%c(Neon) fullPathForImageNamed:name atPath:basePath]) {
@@ -137,5 +139,10 @@ void fixupFramesForInstance(SBDockView *self) {
       break;
     }
   }
-  if (maskPath || overlayPath) %init(CustomBackground);
+  if (maskPath || overlayPath) {
+    customDockY = [[[%c(Neon) prefs] objectForKey:@"kDockY"] floatValue];
+    dockScale = [[[%c(Neon) prefs] objectForKey:@"kDockScale"] floatValue];
+    if (dockScale < 1.0f) dockScale = 1.0f;
+    %init(CustomBackground);
+  }
 }

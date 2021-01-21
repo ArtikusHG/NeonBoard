@@ -13,7 +13,7 @@
 	[UIImagePNGRepresentation(image) writeToFile:path atomically:YES];
 }
 
-+ (UIImage *)getCacheImage:(NSString *)name bundleID:(NSString *)bundleID {
++ (UIImage *)getCacheImage:(NSString *)name bundleID:(NSString *)bundleID  {
   if (!bundleID) return nil;
   NSString *path = [NSString stringWithFormat:@"%@/%@/", @cacheDir, bundleID];
   if (![[NSFileManager defaultManager] fileExistsAtPath:path]) return nil;
