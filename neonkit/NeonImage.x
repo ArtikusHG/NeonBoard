@@ -44,11 +44,12 @@ UIImage *maskImage;
   return newImage;
 }
 
-- (UIImage *)maskedImageWithBlackBackground:(BOOL)blackBackground {
+- (UIImage *)maskedImageWithBlackBackground:(BOOL)blackBackground homescreenIcon:(BOOL)icon {
   UIImage *maskImage = [%c(Neon) getMaskImage];
   if (maskImage) {
-    CGRect imageRect = CGRectMake(0, 0, self.size.width, self.size.height);
-    UIGraphicsBeginImageContextWithOptions(self.size, NO, 0.0);
+    CGSize size = (icon) ? [%c(Neon) homescreenIconSize] : self.size;
+    CGRect imageRect = CGRectMake(0, 0, size.width, size.height);
+    UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
     CGContextClipToMask(UIGraphicsGetCurrentContext(), imageRect, [%c(Neon) getMaskImage].CGImage);
     if (blackBackground) {
       [[UIColor blackColor] setFill];

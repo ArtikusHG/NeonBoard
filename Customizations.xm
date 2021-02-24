@@ -73,9 +73,9 @@
 
 %group MaskWidgets
 %hook WGWidgetInfo
-- (UIImage *)_queue_iconWithFormat:(int)format forWidgetWithIdentifier:(NSString *)widgetIdentifier extension:(id)extension { return [%orig maskedImageWithBlackBackground:NO]; }
-- (UIImage *)_queue_iconWithSize:(CGSize)size scale:(CGFloat)scale forWidgetWithIdentifier:(NSString *)widgetIdentifier extension:(id)extension { return [%orig maskedImageWithBlackBackground:NO]; }
-- (UIImage *)_iconWithFormat:(int)format { return [%orig maskedImageWithBlackBackground:NO]; }
+- (UIImage *)_queue_iconWithFormat:(int)format forWidgetWithIdentifier:(NSString *)widgetIdentifier extension:(id)extension { return [%orig maskedImageWithBlackBackground:NO homescreenIcon:NO]; }
+- (UIImage *)_queue_iconWithSize:(CGSize)size scale:(CGFloat)scale forWidgetWithIdentifier:(NSString *)widgetIdentifier extension:(id)extension { return [%orig maskedImageWithBlackBackground:NO homescreenIcon:NO]; }
+- (UIImage *)_iconWithFormat:(int)format { return [%orig maskedImageWithBlackBackground:NO homescreenIcon:NO]; }
 %end
 %end
 

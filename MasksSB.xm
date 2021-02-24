@@ -84,17 +84,16 @@
 - (NSString *)applicationBundleID;
 @end
 %hook SBBookmarkIcon
-- (UIImage *)iconImageWithInfo:(SBIconImageInfo)info { return [[self unmaskedIconImageWithInfo:info] maskedImageWithBlackBackground:YES]; }
+- (UIImage *)iconImageWithInfo:(SBIconImageInfo)info { return [[self unmaskedIconImageWithInfo:info] maskedImageWithBlackBackground:YES homescreenIcon:YES]; }
 %end
 
-// THIS IS 14 ONLY KEEP IN MIND
 %group CrappyiOS14Workaround
 %hook SBApplicationIcon
 
 - (UIImage *)iconImageWithInfo:(SBIconImageInfo)info {
   if ([[self applicationBundleID] isEqualToString:@"com.apple.mobilecal"]) return %orig;
   NSString *path = [%c(Neon) iconPathForBundleID:[self applicationBundleID]];
-  return (path) ? [[UIImage imageWithContentsOfFile:path] maskedImageWithBlackBackground:NO] : [%orig maskedImageWithBlackBackground:NO];
+  return [((path) ? [UIImage imageWithContentsOfFile:path] : %orig) maskedImageWithBlackBackground:NO homescreenIcon:YES];
 }
 
 %end

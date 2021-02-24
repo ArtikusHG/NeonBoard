@@ -139,6 +139,14 @@ CFPropertyListRef MGCopyAnswer(CFStringRef property);
   return path;
 }
 
++ (CGSize)homescreenIconSize {
+	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+		if (MAX([[UIScreen mainScreen] bounds].size.width, [[UIScreen mainScreen] bounds].size.height) == 1366) return CGSizeMake(83.5, 83.5);
+		return CGSizeMake(76, 76);
+	}
+  return CGSizeMake(60, 60);
+}
+
 + (void)loadPrefs {
   prefs = [NSDictionary dictionaryWithFile:@"/var/mobile/Library/Preferences/com.artikus.neonboardprefs.plist"];
   if (!prefs) return;

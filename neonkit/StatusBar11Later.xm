@@ -88,7 +88,7 @@
 
 - (CALayer *)pinLayer { return nil; }
 - (CALayer *)bodyLayer { return nil; }
-- (CALayer *)boltLayer { return nil; }
+- (CALayer *)boltLayer { return (self.customBoltImage) ? nil : %orig; }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = %orig;
@@ -129,7 +129,10 @@
   self.customFillLayer.contents = (id)self.customFillImage.CGImage;
 }
 
-- (void)_updateBolt { self.customBoltLayer.hidden = self.chargingState != 0; }
+- (void)_updateBolt {
+  if (!self.customBoltImage) %orig;
+  else self.customBoltLayer.hidden = self.chargingState != 0;
+}
 
 %end
 %end
@@ -177,7 +180,10 @@
   self.customFillLayer.contents = (id)self.customFillImage.CGImage;
 }
 
-- (void)_updateBolt { self.customBoltLayer.hidden = self.chargingState != 0; }
+- (void)_updateBolt {
+  if (!self.customBoltImage) %orig;
+  else self.customBoltLayer.hidden = self.chargingState != 0;
+}
 
 %end
 %end

@@ -39,7 +39,7 @@ BOOL maskIcons;
 					NSString *fullPath = [%c(Neon) fullPathForImageNamed:name atPath:[NSString stringWithFormat:@"/Library/Themes/%@/Bundles/%@/", theme, bundleIdentifier]];
 					if (fullPath) {
 						finalImage = [UIImage imageWithContentsOfFile:fullPath];
-						if (maskIcons) finalImage = [finalImage maskedImageWithBlackBackground:NO];
+						if (maskIcons) finalImage = [finalImage maskedImageWithBlackBackground:NO homescreenIcon:NO];
 						CGImageRef originalImage = (__bridge CGImageRef)[copy objectAtIndex:index];
 						finalImage = [finalImage imageOfSize:CGSizeMake(CGImageGetWidth(originalImage) / [UIScreen mainScreen].scale, CGImageGetHeight(originalImage) / [UIScreen mainScreen].scale)];
 						[%c(NeonCacheManager) storeCacheImage:finalImage name:name bundleID:@"NeonSettings"];
@@ -51,7 +51,7 @@ BOOL maskIcons;
 		if (indexes != nil) index = [[indexes objectForKey:name] intValue];
 		if (!finalImage) {
 			if (maskIcons) {
-				finalImage = [[UIImage imageWithCGImage:(__bridge CGImageRef)[copy objectAtIndex:index] scale:[UIScreen mainScreen].scale orientation:UIImageOrientationUp] maskedImageWithBlackBackground:NO];
+				finalImage = [[UIImage imageWithCGImage:(__bridge CGImageRef)[copy objectAtIndex:index] scale:[UIScreen mainScreen].scale orientation:UIImageOrientationUp] maskedImageWithBlackBackground:NO homescreenIcon:NO];
 				[%c(NeonCacheManager) storeCacheImage:finalImage name:name bundleID:@"NeonSettings"];
 			} else continue;
 		}

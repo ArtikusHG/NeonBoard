@@ -52,6 +52,11 @@ UIImage *customClockBackground(CGSize size, BOOL masked) {
   return custom;
 }
 
+UIImage *proportionalResize(UIImage *image, CGSize size) {
+  if (image.size.height <= size.height) return image;
+  return [image imageOfSize:CGSizeMake(image.size.width * size.height / image.size.height, size.height)];
+}
+
 %group AllVersions
 %hook SBClockApplicationIconImageView
 - (UIImage *)contentsImage { return customClockBackground(%orig.size, YES) ? : %orig; }
@@ -104,11 +109,11 @@ SBHClockApplicationIconImageMetrics origMetrics;
 + (SBHClockHandsImageSet *)makeImageSetForMetrics:(SBHClockApplicationIconImageMetrics *)metrics {
   SBHClockHandsImageSet *customSet = %orig;
   origMetrics = MSHookIvar<SBHClockApplicationIconImageMetrics>(customSet, "_metrics");
-  if (UIImage *seconds = clockImageNamed(@"ClockIconSecondHand")) customSet.seconds = seconds;
-  if (UIImage *minutes = clockImageNamed(@"ClockIconMinuteHand")) customSet.minutes = minutes;
-  if (UIImage *hours = clockImageNamed(@"ClockIconHourHand")) customSet.hours = hours;
-  if (UIImage *hourMinuteDot = clockImageNamed(@"ClockIconBlackDot")) customSet.hourMinuteDot = hourMinuteDot;
-  if (UIImage *secondDot = clockImageNamed(@"ClockIconRedDot")) customSet.secondDot = secondDot;
+  if (UIImage *seconds = clockImageNamed(@"ClockIconSecondHand")) customSet.seconds = proportionalResize(seconds, customSet.seconds.size);
+  if (UIImage *minutes = clockImageNamed(@"ClockIconMinuteHand")) customSet.minutes = proportionalResize(minutes, customSet.minutes.size);
+  if (UIImage *hours = clockImageNamed(@"ClockIconHourHand")) customSet.hours = proportionalResize(hours, customSet.hours.size);
+  if (UIImage *hourMinuteDot = clockImageNamed(@"ClockIconBlackDot")) customSet.hourMinuteDot = proportionalResize(hourMinuteDot, customSet.hourMinuteDot.size);
+  if (UIImage *secondDot = clockImageNamed(@"ClockIconRedDot")) customSet.secondDot = proportionalResize(secondDot, customSet.secondDot.size);
   return customSet;
 }
 
@@ -136,7 +141,9 @@ SBHClockApplicationIconImageMetrics origMetrics;
   if ((overrideTheme && [overrideTheme isEqualToString:@"none"]) || ![%c(Neon) iconPathForBundleID:@"com.apple.mobiletimer"]) return;
   if ([%c(Neon) themes] && [%c(Neon) themes].count > 0) themes = [%c(Neon) themes];
   // stuff
-  SBClockApplicationIconImageView *view = [[%c(SBClockApplicationIconImageView) alloc] initWithFrame:CGRectMake(0, 0, 60, 60)];
+  CGSize size = [%c(Neon) homescreenIconSize];
+  CGRect rect = CGRectMake(0, 0, size.width, size.height);
+  SBClockApplicationIconImageView *view = [[%c(SBClockApplicationIconImageView) alloc] initWithFrame:rect];
   view.showsSquareCorners = YES;
   if (kCFCoreFoundationVersionNumber >= 1740) [view applyMetrics:origMetrics];
   [view _setAnimating:NO];
@@ -145,12 +152,12 @@ SBHClockApplicationIconImageMetrics origMetrics;
   [MSHookIvar<CALayer *>(view, "_minutes") setAffineTransform:CGAffineTransformMake(0.453, 0.891, -0.891, 0.453, 0, 0)];
   [MSHookIvar<CALayer *>(view, "_seconds") setAffineTransform:CGAffineTransformMakeRotation(M_PI)];
   // render stuff
-  UIGraphicsBeginImageContextWithOptions(CGSizeMake(60, 60), NO, [UIScreen mainScreen].scale);
+  UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
   if ([[[%c(Neon) prefs] objectForKey:@"kMaskRendered"] boolValue])
-    CGContextClipToMask(UIGraphicsGetCurrentContext(), CGRectMake(0, 0, 60, 60), [%c(Neon) getMaskImage].CGImage);
+    CGContextClipToMask(UIGraphicsGetCurrentContext(), rect, [%c(Neon) getMaskImage].CGImage);
   if (kCFCoreFoundationVersionNumber < 1740) {
     UIImage *background = [UIImage _applicationIconImageForBundleIdentifier:@"com.apple.mobiletimer" format:2 scale:[UIScreen mainScreen].scale];
-    [background drawInRect:CGRectMake(0, 0, 60, 60)];
+    [background drawInRect:rect];
   }
   [view.layer renderInContext:UIGraphicsGetCurrentContext()];
   UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();

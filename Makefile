@@ -6,7 +6,7 @@ export TARGET = iphone:clang:latest:7.0
 
 export CFLAGS = -include $(realpath theos_sucks.h)
 
-THEOS_DEVICE_IP = 192.168.0.30
+THEOS_DEVICE_IP = 192.168.1.159
 #THEOS_DEVICE_IP = localhost
 #THEOS_DEVICE_PORT = 2222
 

@@ -1,6 +1,22 @@
 #include "../Neon.h"
 #include "NeonCacheManager.h"
 
+@interface UIImageSymbolConfiguration (Private)
+@property (assign, setter=_setScale:, nonatomic) long long scale;
+@end
+
+@interface UIImageAsset (Private)
+@property (nonatomic, copy) NSString *assetName;
+@end
+
+@interface UIImage (asjdhbf)
+@property (nonatomic, retain) UIImage *neonOrigImage;
+@end
+
+//%hook UIImage
+//%property (nonatomic, retain) UIImage *neonOrigImage;
+//%end
+
 NSArray *themes;
 BOOL glyphMode;
 
@@ -47,13 +63,15 @@ UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL
   if (@available(iOS 13, *)) {
     UIImage *image = custom;
     if (isTemplate) image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    //if (orig.symbolConfiguration) image = [image.imageAsset imageWithConfiguration:orig.configuration];
+    //if (configuration) image = [image.imageAsset imageWithConfiguration:configuration];
     if (orig.symbolConfiguration) image = [[image imageWithConfiguration:orig.configuration] imageByApplyingSymbolConfiguration:orig.symbolConfiguration];
     else {
       if (configuration) image = [custom imageWithConfiguration:configuration];
       else image = [custom imageWithConfiguration:orig.configuration];
     }
     //image.neonOrigImage = orig;
+    //NSLog(@"NEONDEBUG: %@: %@", orig.imageAsset.assetName, orig.symbolConfiguration);
+    //if (orig.symbolConfiguration.scale < 0) image = [image imageOfSize:CGSizeMake(orig.size.width * 2, orig.size.height * 2)];
     return image;
   }
   return custom;

@@ -48,11 +48,9 @@
 		}
     if ([self.specifier propertyForKey:@"themePath"]) {
  			[_specifiers addObject:[PSSpecifier groupSpecifierWithName:@"All icons from the pack"]];
- 			if ([self.specifier propertyForKey:@"thisIcon"] && !self.iconSpecifiers) {
- 				PSSpecifier *loadButton = [PSSpecifier preferenceSpecifierNamed:@"Load all icons" target:self set:nil get:nil detail:nil cell:PSButtonCell edit:nil];
- 				loadButton.buttonAction = @selector(loadIcons:);
- 				[_specifiers addObject:loadButton];
- 			} else self.shouldAutoLoadIcons = YES;
+ 			PSSpecifier *loadButton = [PSSpecifier preferenceSpecifierNamed:@"Load all icons" target:self set:nil get:nil detail:nil cell:PSButtonCell edit:nil];
+ 			loadButton.buttonAction = @selector(loadIcons:);
+ 			[_specifiers addObject:loadButton];
  		}
 		self.bundleIDs = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self.specifier propertyForKey:@"themePath"] error:nil] mutableCopy];
 		for (int i = self.bundleIDs.count - 1; i >= 0; i--) {
@@ -71,11 +69,6 @@
 	if (self.iconSpecifiers.count != 0) [_specifiers addObjectsFromArray:self.iconSpecifiers];
   return _specifiers;
 }
-
-- (void)viewDidAppear:(BOOL)didAppear {
- 	[super viewDidAppear:didAppear];
- 	if (self.shouldAutoLoadIcons) [self loadIcons:nil];
- }
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
@@ -148,16 +141,21 @@
  	id progressAlert;
  	if (@available(iOS 8, *)) {
  		progressAlert = [UIAlertController alertControllerWithTitle:@"Loading icons, be patient..." message:@"" preferredStyle:UIAlertControllerStyleAlert];
- 		[self presentViewController:progressAlert animated:YES completion:nil];
+    [progressAlert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * action) {
+      self.cancelLoad = YES;
+    }]];
+    [self presentViewController:progressAlert animated:YES completion:nil];
  	} else {
- 		progressAlert = [[UIAlertView alloc] initWithTitle:@"Loading icons, be patient..." message:@"" delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
- 		[progressAlert show];
+ 		progressAlert = [[UIAlertView alloc] initWithTitle:@"Loading icons, be patient..." message:@"" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:nil];
+    [progressAlert setTag:1337];
+    [progressAlert show];
  	}
  	self.iconSpecifiers = [NSMutableArray new];
  	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
  		NSInteger done = 0;
  		for (NSString *bundleID in bundleIDs) {
- 			PSSpecifier *specifier = [PSSpecifier preferenceSpecifierNamed:bundleID target:self set:nil get:nil detail:nil cell:PSButtonCell edit:nil];
+      if (self.cancelLoad) break;
+      PSSpecifier *specifier = [PSSpecifier preferenceSpecifierNamed:bundleID target:self set:nil get:nil detail:nil cell:PSButtonCell edit:nil];
  			[specifier setProperty:[NBPSelectIconCell class] forKey:@"cellClass"];
  			[specifier setProperty:bundleID forKey:@"iconBundleID"];
  			[specifier setProperty:@70 forKey:@"height"];
@@ -170,8 +168,9 @@
  			done++;
  			dispatch_async(dispatch_get_main_queue(), ^{
        	[progressAlert setMessage:[NSString stringWithFormat:@"Loading icon %ld of %lu...", (long)done, (unsigned long)bundleIDs.count]];
-       });
- 		}
+      });
+    }
+    self.cancelLoad = NO;
  		[_specifiers addObjectsFromArray:self.iconSpecifiers];
  		//self.originalSpecifiers = [_specifiers mutableCopy];
  		dispatch_async(dispatch_get_main_queue(), ^{
@@ -238,6 +237,7 @@ PSSpecifier *globalSender;
 		else respring();
 	}
 	else if (alertView.tag == 420 && buttonIndex != alertView.cancelButtonIndex && globalSender) [self actuallySetOverride:globalSender];
+  else if (alertView.tag == 1337) self.cancelLoad = YES;
 }
 
 - (void)actuallySetOverride:(PSSpecifier *)sender {

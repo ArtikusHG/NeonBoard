@@ -85,6 +85,7 @@ typedef struct SBHClockApplicationIconImageMetrics {
 + (NSNumber *)deviceScale;
 + (NSArray *)iconEffectDevicePrefixes;
 + (NSString *)renderDir;
++ (CGSize)homescreenIconSize;
 @end
 
 @interface Neon (Images)
@@ -103,7 +104,7 @@ typedef struct SBHClockApplicationIconImageMetrics {
 
 @interface UIImage (Neon)
 - (UIImage *)imageOfSize:(CGSize)size;
-- (UIImage *)maskedImageWithBlackBackground:(BOOL)blackBackground;
+- (UIImage *)maskedImageWithBlackBackground:(BOOL)blackBackground homescreenIcon:(BOOL)icon;
 @end
 
 @interface NSDictionary (Neon)

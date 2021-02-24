@@ -94,6 +94,7 @@ void fixupColor(NSMutableDictionary *dict, NSString *key) { if (dict[key]) [dict
   if ([[NSFileManager defaultManager] fileExistsAtPath:@"/Library/MobileSubstrate/DynamicLibraries/Valentine.dylib"]) return;
   if (!%c(Neon)) dlopen("/Library/MobileSubstrate/DynamicLibraries/NeonEngine.dylib", RTLD_LAZY);
   if (!%c(Neon)) return;
+  dlopen("/Library/MobileSubstrate/DynamicLibraries/NeonKit.dylib", RTLD_LAZY);
 
   if (![%c(Neon) prefs]) return;
   NSString *overrideTheme = [[%c(Neon) overrideThemes] objectForKey:@"com.apple.mobilecal"];
