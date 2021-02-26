@@ -100,7 +100,13 @@ CFPropertyListRef MGCopyAnswer(CFStringRef property);
 
 + (NSString *)iconPathForBundleID:(NSString *)bundleID {
   if (!bundleID) return nil;
-  if ([bundleID isEqualToString:@"com.apple.mobiletimer"] && [[NSFileManager defaultManager] fileExistsAtPath:[[%c(Neon) renderDir] stringByAppendingPathComponent:@"NeonStaticClockIcon.png"]]) return [[%c(Neon) renderDir] stringByAppendingPathComponent:@"NeonStaticClockIcon.png"];
+  if (![bundleID isEqualToString:@"com.apple.mobiletimer"]) {
+    NSString *renderPath = [NSString stringWithFormat:@"%@/%@.png", [Neon renderDir], bundleID];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:renderPath]) return renderPath;
+  } else {
+    NSString *path = [[%c(Neon) renderDir] stringByAppendingPathComponent:@"NeonStaticClockIcon.png"];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) return path;
+  }
   NSString *overrideTheme = [overrideThemes objectForKey:bundleID];
   if (overrideTheme) {
     if ([overrideTheme isEqualToString:@"none"]) return nil;
@@ -123,10 +129,6 @@ CFPropertyListRef MGCopyAnswer(CFStringRef property);
 + (NSString *)iconPathForBundleID:(NSString *)bundleID fromTheme:(NSString *)theme {
   // Protection against dumbasses (me)
   if (!bundleID || !theme) return nil;
-  if (![bundleID isEqualToString:@"com.apple.mobiletimer"]) {
-    NSString *renderPath = [NSString stringWithFormat:@"%@/%@.png", [Neon renderDir], bundleID];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:renderPath]) return renderPath;
-  }
   // Check if theme dir exists
   NSString *themeDir = [NSString stringWithFormat:@"/Library/Themes/%@/IconBundles/", theme];
   if (![[NSFileManager defaultManager] fileExistsAtPath:themeDir isDirectory:nil]) return nil;
