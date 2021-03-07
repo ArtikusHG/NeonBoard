@@ -22,6 +22,8 @@
     UIImage *defaultIcon = [UIImage _applicationIconImageForBundleIdentifier:@"com.apple.DemoApp" format:0 scale:[UIScreen mainScreen].scale];
     for (LSApplicationProxy *proxy in [[NSClassFromString(@"LSApplicationWorkspace") defaultWorkspace] allApplications]) {
       if ([internalApps containsObject:proxy.applicationIdentifier]) continue;
+      // if ( proxy.isRestricted ) continue;
+
       NSString *title = proxy.localizedName;
       // old versions (e.g. ios 7 don't get localizedName as an empty string for some reason :/)
       if (!title || title.length == 0) {
