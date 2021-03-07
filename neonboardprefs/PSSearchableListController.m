@@ -29,9 +29,18 @@
     return;
   }
   NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(PSSpecifier *specifier, NSDictionary *bindings) {
-    return [specifier.name.lowercaseString rangeOfString:text.lowercaseString].location != NSNotFound;
+    NSString* key = [specifier propertyForKey:@"iconImage"];
+    if (key) {
+      return [specifier.name.lowercaseString rangeOfString:text.lowercaseString].location != NSNotFound;
+    } else {
+      return YES;
+    }
   }];
-  self.specifiers = [[self.originalSpecifiers filteredArrayUsingPredicate:predicate] mutableCopy];
+  NSMutableArray *_specifiersFiltered = [NSMutableArray new];
+  [_specifiersFiltered addObjectsFromArray:self.specifiersInstalledSystemGroup];
+  [_specifiersFiltered addObjectsFromArray:self.specifiersInstalledUserGroup];
+  [_specifiersFiltered addObjectsFromArray:self.specifiersOffloadedGroup];
+  self.specifiers = [[_specifiersFiltered filteredArrayUsingPredicate:predicate] mutableCopy];
 }
 
 - (void)updateSearchResultsForSearchController:(UISearchController *)controller {

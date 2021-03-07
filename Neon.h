@@ -44,6 +44,8 @@ typedef struct SBHClockApplicationIconImageMetrics {
 @property (nonatomic, readonly) NSString *localizedName;
 @property (nonatomic, readonly) NSString *applicationIdentifier;
 @property (nonatomic, readonly) NSURL *bundleURL;
+@property (getter=isInstalled, nonatomic, readonly) BOOL installed;
+@property (readonly) NSString * applicationType;
 + (LSApplicationProxy *)applicationProxyForIdentifier:(NSString *)identifier;
 @end
 
@@ -57,6 +59,7 @@ typedef struct SBHClockApplicationIconImageMetrics {
 
 @interface LSApplicationWorkspace
 + (instancetype)defaultWorkspace;
+- (NSMutableArray *)allApplications;
 - (NSMutableArray *)allInstalledApplications;
 @end
 
