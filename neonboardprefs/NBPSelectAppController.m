@@ -28,6 +28,9 @@
         NSBundle *bundle = [NSBundle bundleWithURL:proxy.bundleURL];
         title = bundle.infoDictionary[@"CFBundleName"] ? : bundle.infoDictionary[@"CFBundleExecutable"];
       }
+      if ( [proxy.applicationIdentifier isEqualToString:@"com.apple.CarPlaySettings"] ) {
+        title = [title stringByAppendingString:@" - CarPlay"];
+      }
       PSSpecifier *specifier = [PSSpecifier preferenceSpecifierNamed:title target:self set:nil get:nil detail:NSClassFromString(@"NBPSelectThemeController") cell:PSLinkCell edit:nil];
       [specifier setProperty:defaultIcon forKey:@"iconImage"];
       [specifier setProperty:proxy.applicationIdentifier forKey:@"appBundleID"];
