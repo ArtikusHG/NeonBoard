@@ -5,22 +5,22 @@
 @implementation PSSearchableListController
 
 - (void)viewDidLoad {
-	[super viewDidLoad];
-	if (@available(iOS 8, *)) {
-		UISearchController *searchController = [UISearchController new];
-		searchController.searchResultsUpdater = self;
-		searchController.hidesNavigationBarDuringPresentation = NO;
-		searchController.searchBar.delegate = self;
-		if (@available(iOS 13, *)) searchController.obscuresBackgroundDuringPresentation = NO;
-		else searchController.dimsBackgroundDuringPresentation = NO;
-		if (@available(iOS 11, *)) self.navigationItem.searchController = searchController;
-		else self.table.tableHeaderView = searchController.searchBar;
-	} else {
-		UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
-		searchBar.delegate = self;
-		searchBar.placeholder = @"Search";
-		self.table.tableHeaderView = searchBar;
-	}
+  [super viewDidLoad];
+  if (@available(iOS 8, *)) {
+    UISearchController *searchController = [UISearchController new];
+    searchController.searchResultsUpdater = self;
+    searchController.hidesNavigationBarDuringPresentation = NO;
+    searchController.searchBar.delegate = self;
+    if (@available(iOS 13, *)) searchController.obscuresBackgroundDuringPresentation = NO;
+    else searchController.dimsBackgroundDuringPresentation = NO;
+    if (@available(iOS 11, *)) self.navigationItem.searchController = searchController;
+    else self.table.tableHeaderView = searchController.searchBar;
+  } else {
+    UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
+    searchBar.delegate = self;
+    searchBar.placeholder = @"Search";
+    self.table.tableHeaderView = searchBar;
+  }
 }
 
 - (void)updateSearchResultsWithText:(NSString *)text {

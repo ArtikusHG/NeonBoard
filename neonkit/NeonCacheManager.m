@@ -9,8 +9,8 @@
   if (scale > 1) name = [NSString stringWithFormat:@"%@@%d", name, (int)scale];
   NSString *path = [NSString stringWithFormat:@"%@/%@/%@x.png", @cacheDir, bundleID, name];
   if (![[NSFileManager defaultManager] fileExistsAtPath:path.stringByDeletingLastPathComponent])
-		[[NSFileManager defaultManager] createDirectoryAtPath:path.stringByDeletingLastPathComponent withIntermediateDirectories:YES attributes:@{NSFilePosixPermissions: @0777} error:nil];
-	[UIImagePNGRepresentation(image) writeToFile:path atomically:YES];
+    [[NSFileManager defaultManager] createDirectoryAtPath:path.stringByDeletingLastPathComponent withIntermediateDirectories:YES attributes:@{NSFilePosixPermissions: @0777} error:nil];
+  [UIImagePNGRepresentation(image) writeToFile:path atomically:YES];
 }
 
 + (UIImage *)getCacheImage:(NSString *)name bundleID:(NSString *)bundleID  {

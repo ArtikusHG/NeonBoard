@@ -5,8 +5,8 @@
 @implementation NBPThemingOptionsController
 
 - (NSArray *)specifiers {
-	if (!_specifiers) _specifiers = [self loadSpecifiersFromPlistName:@"Theming" target:self];
-	return _specifiers;
+  if (!_specifiers) _specifiers = [self loadSpecifiersFromPlistName:@"Theming" target:self];
+  return _specifiers;
 }
 
 - (void)setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {

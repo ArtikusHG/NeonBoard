@@ -16,7 +16,7 @@
 
 - (NSDictionary *)bundleIconsDictionary {
   NSString *path = [%c(Neon) iconPathForBundleID:self.applicationIdentifier].lastPathComponent;
-	return (path) ? @{ @"CFBundlePrimaryIcon" : @{ @"CFBundleIconFiles" : @[path] } } : %orig;
+  return (path) ? @{ @"CFBundlePrimaryIcon" : @{ @"CFBundleIconFiles" : @[path] } } : %orig;
 }
 
 %end
@@ -35,7 +35,7 @@
 
 - (NSDictionary *)iconsDictionary {
   NSString *path = [%c(Neon) iconPathForBundleID:self._boundApplicationIdentifier].lastPathComponent;
-	return (path) ? @{ @"CFBundlePrimaryIcon" : @{ @"CFBundleIconFiles" : @[path] } } : %orig;
+  return (path) ? @{ @"CFBundlePrimaryIcon" : @{ @"CFBundleIconFiles" : @[path] } } : %orig;
 }
 
 %end
@@ -61,12 +61,12 @@
 // is actually _LSLazyPropertyList of same format but who cares lol it works
 - (NSDictionary *)iconsDictionary {
   NSString *path = [%c(Neon) iconPathForBundleID:self.boundApplicationIdentifier].lastPathComponent;
-	return (path) ? @{ @"CFBundlePrimaryIcon" : @{ @"CFBundleIconFiles" : @[path] }, @"UIPrerenderedIcon" : @YES } : %orig;
+  return (path) ? @{ @"CFBundlePrimaryIcon" : @{ @"CFBundleIconFiles" : @[path] }, @"UIPrerenderedIcon" : @YES } : %orig;
 }
 
 - (NSDictionary *)boundIconsDictionary {
   NSString *path = [%c(Neon) iconPathForBundleID:self.boundApplicationIdentifier].lastPathComponent;
-	return (path) ? @{ @"CFBundlePrimaryIcon" : @{ @"CFBundleIconFiles" : @[path] }, @"UIPrerenderedIcon" : @YES } : %orig;
+  return (path) ? @{ @"CFBundlePrimaryIcon" : @{ @"CFBundleIconFiles" : @[path] }, @"UIPrerenderedIcon" : @YES } : %orig;
 }
 
 %end
@@ -100,7 +100,7 @@
   if ([%c(Neon) themes] && [%c(Neon) themes].count > 0) {
     if (kCFCoreFoundationVersionNumber >= 1665.15) %init(Themes13);
     else if (kCFCoreFoundationVersionNumber >= 1443.00) %init(Themes_1112)
-    else %init(ThemesOlder);
+      else %init(ThemesOlder);
     if ([[%c(Neon) prefs] valueForKey:@"kGlyphMode"] && [[[%c(Neon) prefs] valueForKey:@"kGlyphMode"] boolValue]) %init(GlyphMode);
   }
 }

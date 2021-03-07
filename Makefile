@@ -26,4 +26,4 @@ include $(THEOS_MAKE_PATH)/aggregate.mk
 
 after-install::
 	install.exec "rm -rf /var/containers/Shared/SystemGroup/systemgroup.com.apple.lsd.iconscache/Library/Caches/com.apple.IconsCache && rm -rf /var/mobile/Library/Caches/MappedImageCache/Persistent && killall -KILL lsd lsdiconservice && killall -9 lsd fontservicesd SpringBoard"
-#	install.exec "rm -rf /var/mobile/Library/Caches/com.apple.IconsCache && rm -rf /var/mobile/Library/Caches/MappedImageCache/Persistent && killall -KILL lsd lsdiconservice && killall -9 lsd SpringBoard"
+# install.exec "rm -rf /var/mobile/Library/Caches/com.apple.IconsCache && rm -rf /var/mobile/Library/Caches/MappedImageCache/Persistent && killall -KILL lsd lsdiconservice && killall -9 lsd SpringBoard"

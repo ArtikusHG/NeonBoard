@@ -1,8 +1,8 @@
 {
-    Filter =     {
-        Bundles =         (
-            "com.apple.springboard",
-            "com.apple.CalendarUIKit"
-        );
-    };
+  Filter = {
+    Bundles = (
+      "com.apple.springboard",
+      "com.apple.CalendarUIKit"
+    );
+  };
 }

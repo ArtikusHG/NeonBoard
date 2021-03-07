@@ -2,7 +2,7 @@ BOOL fontExists(NSString *fontName) {
   NSArray *families = [UIFont familyNames];
   if ([families containsObject:fontName]) return YES;
   for (NSString *family in families) if ([[UIFont fontNamesForFamilyName:family] containsObject:fontName]) return YES;
-  return NO;
+    return NO;
 }
 
 UIFont *fontWithParams(NSString *fontName, CGFloat size, UIFontWeight weight) {

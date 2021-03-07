@@ -5,8 +5,8 @@
 @implementation NBPCustomizationController
 
 - (NSArray *)specifiers {
-	if (!_specifiers) _specifiers = [self loadSpecifiersFromPlistName:@"Customization" target:self];
-	return _specifiers;
+  if (!_specifiers) _specifiers = [self loadSpecifiersFromPlistName:@"Customization" target:self];
+  return _specifiers;
 }
 
 - (void)setPreferenceValue:(id)value specifier:(PSSpecifier *)specifier {

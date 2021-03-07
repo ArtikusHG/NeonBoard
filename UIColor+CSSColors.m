@@ -202,7 +202,7 @@
 
 + (UIColor *)defaultCSSColorWithString:(NSString *)colorString {
   for (NSString *key in [self cssColors].allKeys) if ([[key lowercaseString] isEqualToString:[colorString lowercaseString]]) return [self colorFromHexString:[[self cssColors] objectForKey:key]];
-  return [UIColor blackColor];
+    return [UIColor blackColor];
 }
 
 @end

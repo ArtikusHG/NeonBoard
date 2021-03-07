@@ -83,7 +83,7 @@ CFPropertyListRef MGCopyAnswer(CFStringRef property);
   [numericScales removeObject:[NSNumber numberWithInteger:scale]];
   [numericScales insertObject:[NSNumber numberWithInteger:scale] atIndex:0];
   for (NSNumber *loopScale in numericScales) [potentialFilenames addObjectsFromArray:[self potentialFilenamesForName:name deviceString:device scale:[loopScale integerValue]]];
-  return potentialFilenames;
+    return potentialFilenames;
 }
 
 // Usage: fullPathForImageNamed:@"SBBadgeBG" atPath:@"/Library/Themes/Viola Badges.theme/Bundles/com.apple.springboard/" (last symbol of basePath should be a slash (/)!)
@@ -95,7 +95,7 @@ CFPropertyListRef MGCopyAnswer(CFStringRef property);
     NSString *fullFilename = [basePath stringByAppendingString:filename];
     if ([[NSFileManager defaultManager] fileExistsAtPath:fullFilename isDirectory:nil]) return fullFilename;
   }
-	return nil;
+  return nil;
 }
 
 + (NSString *)iconPathForBundleID:(NSString *)bundleID {
@@ -132,7 +132,7 @@ CFPropertyListRef MGCopyAnswer(CFStringRef property);
   // Check if theme dir exists
   NSString *themeDir = [NSString stringWithFormat:@"/Library/Themes/%@/IconBundles/", theme];
   if (![[NSFileManager defaultManager] fileExistsAtPath:themeDir isDirectory:nil]) return nil;
-	// Return filename (or nil)
+  // Return filename (or nil)
   NSString *path = [Neon fullPathForImageNamed:bundleID atPath:themeDir];
   if (!path && [bundleID isEqualToString:@"com.apple.mobiletimer"]) {
     themeDir = [NSString stringWithFormat:@"/Library/Themes/%@/Bundles/com.apple.springboard/", theme];
@@ -142,10 +142,10 @@ CFPropertyListRef MGCopyAnswer(CFStringRef property);
 }
 
 + (CGSize)homescreenIconSize {
-	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-		if (MAX([[UIScreen mainScreen] bounds].size.width, [[UIScreen mainScreen] bounds].size.height) == 1366) return CGSizeMake(83.5, 83.5);
-		return CGSizeMake(76, 76);
-	}
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+    if (MAX([[UIScreen mainScreen] bounds].size.width, [[UIScreen mainScreen] bounds].size.height) == 1366) return CGSizeMake(83.5, 83.5);
+    return CGSizeMake(76, 76);
+  }
   return CGSizeMake(60, 60);
 }
 

@@ -7,35 +7,35 @@
 //#define staticClock "/var/mobile/Library/Caches/NeonCache/IconRender/NeonStaticClockIcon.png"
 
 typedef struct SBIconImageInfo {
-	CGSize size;
-	double scale;
-	double continuousCornerRadius;
+  CGSize size;
+  double scale;
+  double continuousCornerRadius;
 } SBIconImageInfo;
 
 // i'm not even gonna rant about this but WHOEVER DID THIS TO THE LIVE CLOCK ICON SUCKS
 typedef struct SBHClockApplicationIconImageMetrics {
-	CGFloat secondsHandWidth;
-	CGFloat secondsHandLength;
-	CGFloat secondsHandleLength;
-	CGFloat secondsHandRingDiameter;
-	CGFloat secondsHandRingKnockoutDiameter;
-	CGSize secondsHandBounds;
-	CGFloat minutesHandWidth;
-	CGFloat minutesHandLength;
-	CGFloat minutesHandRingDiameter;
-	CGFloat minutesHandRingKnockoutDiameter;
-	CGSize minutesHandBounds;
-	CGFloat shadowRadius;
-	CGFloat shadowInset;
-	CGFloat hoursHandWidth;
-	CGFloat hoursHandLength;
-	CGSize hoursHandBounds;
-	CGFloat separatorWidth;
-	CGFloat separatorLength;
-	CGFloat separatorExtraLength;
-	CGFloat faceRadius;
-	CGFloat contentsScale;
-	SBIconImageInfo iconImageInfo;
+  CGFloat secondsHandWidth;
+  CGFloat secondsHandLength;
+  CGFloat secondsHandleLength;
+  CGFloat secondsHandRingDiameter;
+  CGFloat secondsHandRingKnockoutDiameter;
+  CGSize secondsHandBounds;
+  CGFloat minutesHandWidth;
+  CGFloat minutesHandLength;
+  CGFloat minutesHandRingDiameter;
+  CGFloat minutesHandRingKnockoutDiameter;
+  CGSize minutesHandBounds;
+  CGFloat shadowRadius;
+  CGFloat shadowInset;
+  CGFloat hoursHandWidth;
+  CGFloat hoursHandLength;
+  CGSize hoursHandBounds;
+  CGFloat separatorWidth;
+  CGFloat separatorLength;
+  CGFloat separatorExtraLength;
+  CGFloat faceRadius;
+  CGFloat contentsScale;
+  SBIconImageInfo iconImageInfo;
 } SBHClockApplicationIconImageMetrics;
 
 @interface LSApplicationProxy : NSObject

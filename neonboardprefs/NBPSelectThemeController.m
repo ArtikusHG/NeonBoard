@@ -82,12 +82,12 @@ NSString *themeNameFromDirectoryName(NSString *themeName);
             [themePath stringByAppendingPathComponent:@"icon.png"],
             [[themePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"Icon.png"],
             [[themePath stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"icon.png"]
-          ] mutableCopy];
+            ] mutableCopy];
           NSString *appIconPath = [NSClassFromString(@"Neon") iconPathForBundleID:[self.specifier propertyForKey:@"appBundleID"] fromTheme:[specifier propertyForKey:@"themeName"]];
           if (appIconPath) [iconPaths insertObject:appIconPath atIndex:0];
           for (NSString *iconPath in iconPaths) if ((icon = [UIImage imageWithContentsOfFile:iconPath])) break;
-          if (icon) {
-            icon = iconForCellFromIcon(icon, CGSizeMake(55, 55));
+            if (icon) {
+              icon = iconForCellFromIcon(icon, CGSizeMake(55, 55));
             if (appIconPath) [specifier setProperty:icon forKey:@"thisIcon"]; // pass the icon to avoid loading it again when picking for selected app and of selected app im very good at explaining ik
           } else {
             icon = [UIImage imageNamed:@"DefaultIcon-60" inBundle:[NSBundle bundleWithIdentifier:@"com.apple.mobileicons.framework"]];

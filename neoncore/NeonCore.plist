@@ -1,8 +1,8 @@
 {
-    Filter = {
-        Bundles = (
-            "com.apple.UIKit",
-            "com.apple.IconServices"
-        );
-    };
+  Filter = {
+    Bundles = (
+      "com.apple.UIKit",
+      "com.apple.IconServices"
+      );
+  };
 }

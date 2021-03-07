@@ -39,7 +39,7 @@ UIImage *currentDot;
     if ([[NSFileManager defaultManager] fileExistsAtPath:path1 isDirectory:nil] || [[NSFileManager defaultManager] fileExistsAtPath:path2 isDirectory:nil]) continue;
     else [mutableThemes removeObjectAtIndex:i];
   }
-	if (mutableThemes && mutableThemes.count > 0) {
+  if (mutableThemes && mutableThemes.count > 0) {
     for (NSString *theme in mutableThemes) {
       for (NSString *folder in @[@"ANEMPageDots", @"Bundles/com.magicdots.images"]) {
         basePath = [NSString stringWithFormat:@"/Library/Themes/%@/%@/", theme, folder];
