@@ -3,85 +3,85 @@
 <plist version="1.0">
   <array>
     <string>com.apple.AccountAuthenticationDialog</string>
+    <string>com.apple.AdSheetPhone</string>
+    <string>com.apple.appleaccount.AACredentialRecoveryDialog</string>
     <string>com.apple.AppSSOUIService</string>
     <string>com.apple.AskPermissionUI</string>
     <string>com.apple.AuthKitUIService</string>
     <string>com.apple.AXUIViewService</string>
     <string>com.apple.BusinessChatViewService</string>
+    <string>com.apple.carkit.DNDBuddy</string>
     <string>com.apple.CarPlaySplashScreen</string>
     <string>com.apple.CheckerBoard</string>
+    <string>com.apple.ClipViewService</string>
+    <string>com.apple.CloudKit.ShareBear</string>
     <string>com.apple.CompassCalibrationViewService</string>
+    <string>com.apple.CoreAuthUI</string>
+    <string>com.apple.CredentialSharingService</string>
     <string>com.apple.CTCarrierSpaceAuth</string>
+    <string>com.apple.ctkui</string>
     <string>com.apple.CTNotifyUIService</string>
     <string>com.apple.DataActivation</string>
     <string>com.apple.datadetectors.DDActionsService</string>
     <string>com.apple.DemoApp</string>
+    <string>com.apple.Diagnostics</string>
     <string>com.apple.DiagnosticsService</string>
-    <string>com.apple.carkit.DNDBuddy</string>
+    <string>com.apple.dt.XcodePreviews</string>
+    <string>com.apple.FacebookAccountMigrationDialog</string>
+    <string>com.apple.family</string>
     <string>com.apple.fieldtest</string>
     <string>com.apple.FontInstallViewService</string>
     <string>com.apple.FTMInternal</string>
     <string>com.apple.gamecenter.GameCenterUIService</string>
+    <string>com.apple.HealthENBuddy</string>
+    <string>com.apple.HealthENLauncher</string>
     <string>com.apple.HealthPrivacyService</string>
-    <string>com.apple.CloudKit.ShareBear</string>
+    <string>com.apple.iad.iAdOptOut</string>
+    <string>com.apple.icloud.spnfcurl</string>
+    <string>com.apple.icq</string>
     <string>com.apple.iMessageAppsViewService</string>
     <string>com.apple.InCallService</string>
     <string>com.apple.ios.StoreKitUIService</string>
-    <string>com.apple.MailCompositionService</string>
+    <string>com.apple.iosdiagnostics</string>
     <string>com.apple.Magnifier</string>
+    <string>com.apple.MailCompositionService</string>
     <string>com.apple.mobilesms.compose</string>
     <string>com.apple.MusicUIService</string>
+    <string>com.apple.PassbookSecureUIService</string>
+    <string>com.apple.PassbookUIService</string>
+    <string>com.apple.Photos.PhotosUIService</string>
     <string>com.apple.PhotosViewService</string>
     <string>com.apple.PreBoard</string>
     <string>com.apple.PrintKit.Print-Center</string>
+    <string>com.apple.PublicHealthRemoteUI</string>
+    <string>com.apple.purplebuddy</string>
+    <string>com.apple.quicklook.quicklookd</string>
+    <string>com.apple.RemoteiCloudQuotaUI</string>
     <string>com.apple.SafariViewService</string>
     <string>com.apple.ScreenSharingViewService</string>
     <string>com.apple.ScreenshotServicesService</string>
     <string>com.apple.ScreenTimeUnlock</string>
-    <string>com.apple.purplebuddy</string>
     <string>com.apple.SharedWebCredentialViewService</string>
     <string>com.apple.SharingViewService</string>
+    <string>com.apple.shortcuts.runtime</string>
     <string>com.apple.SIMSetupUIService</string>
-    <string>com.apple.social.SLYahooAuth</string>
-    <string>com.apple.susuiservice</string>
     <string>com.apple.siri</string>
-    <string>com.apple.icloud.spnfcurl</string>
+    <string>com.apple.SiriViewService</string>
+    <string>com.apple.SleepLockScreen</string>
+    <string>com.apple.social.remoteui.SocialUIService</string>
+    <string>com.apple.social.SLYahooAuth</string>
     <string>com.apple.Spotlight</string>
     <string>com.apple.StoreDemoViewService</string>
+    <string>com.apple.SubcredentialUIService</string>
+    <string>com.apple.susuiservice</string>
+    <string>com.apple.TencentWeiboAccountMigrationDialog</string>
+    <string>com.apple.TrustMe</string>
     <string>com.apple.TVAccessViewService</string>
-    <string>com.apple.CoreAuthUI</string>
+    <string>com.apple.uikit.PrintStatus</string>
     <string>com.apple.VSViewService</string>
-    <string>com.apple.PassbookUIService</string>
     <string>com.apple.webapp</string>
     <string>com.apple.WebContentFilter.remoteUI.WebContentAnalysisUI</string>
     <string>com.apple.WebSheet</string>
-    <string>com.apple.iad.iAdOptOut</string>
-    <string>com.apple.appleaccount.AACredentialRecoveryDialog</string>
-    <string>com.apple.FacebookAccountMigrationDialog</string>
-    <string>com.apple.AdSheetPhone</string>
-    <string>com.apple.iosdiagnostics</string>
-    <string>com.apple.uikit.PrintStatus</string>
-    <string>com.apple.quicklook.quicklookd</string>
-    <string>com.apple.SiriViewService</string>
-    <string>com.apple.social.remoteui.SocialUIService</string>
-    <string>com.apple.TencentWeiboAccountMigrationDialog</string>
-    <string>com.apple.TrustMe</string>
     <string>com.apple.WebViewService</string>
-    <string>com.apple.ClipViewService</string>
-    <string>com.apple.CredentialSharingService</string>
-    <string>com.apple.ctkui</string>
-    <string>com.apple.Diagnostics</string>
-    <string>com.apple.HealthENLauncher</string>
-    <string>com.apple.PublicHealthRemoteUI</string>
-    <string>com.apple.family</string>
-    <string>com.apple.HealthENBuddy</string>
-    <string>com.apple.icq</string>
-    <string>com.apple.PassbookSecureUIService</string>
-    <string>com.apple.Photos.PhotosUIService</string>
-    <string>com.apple.RemoteiCloudQuotaUI</string>
-    <string>com.apple.shortcuts.runtime</string>
-    <string>com.apple.SleepLockScreen</string>
-    <string>com.apple.SubcredentialUIService</string>
-    <string>com.apple.dt.XcodePreviews</string>
   </array>
 </plist>
