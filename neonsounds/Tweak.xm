@@ -37,7 +37,7 @@ bool getCustomFileName(BOOL orig, char *path) {
 
 %ctor {
   if (!%c(Neon)) dlopen("/Library/MobileSubstrate/DynamicLibraries/NeonEngine.dylib", RTLD_LAZY);
-	if (!%c(Neon) && ![%c(Neon) themes]) return;
+  if (!%c(Neon) && ![%c(Neon) themes]) return;
   soundPathCache = [NSCache new];
   if (MSImageRef image = MSGetImageByName("/System/Library/Frameworks/AudioToolbox.framework/AudioToolbox")) {
     %init(hook1, func1 = MSFindSymbol(image, "__Z24GetFileNameForThisActionmPcRb"));

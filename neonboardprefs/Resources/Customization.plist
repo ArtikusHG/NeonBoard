@@ -1,67 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>items</key>
-	<array>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>label</key>
-			<string>Customization options</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSSwitchCell</string>
-			<key>label</key>
-			<string>Hide labels</string>
-			<key>defaults</key>
-			<string>com.artikus.neonboardprefs</string>
-			<key>key</key>
-			<string>kHideLabels</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSSwitchCell</string>
-			<key>label</key>
-			<string>Disable dark overlay</string>
-			<key>defaults</key>
-			<string>com.artikus.neonboardprefs</string>
-			<key>key</key>
-			<string>kNoOverlay</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSSwitchCell</string>
-			<key>label</key>
-			<string>Hide dock background</string>
-			<key>defaults</key>
-			<string>com.artikus.neonboardprefs</string>
-			<key>key</key>
-			<string>kNoDockBg</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSSwitchCell</string>
-			<key>label</key>
-			<string>Hide folder icon background</string>
-			<key>defaults</key>
-			<string>com.artikus.neonboardprefs</string>
-			<key>key</key>
-			<string>kNoFolderIconBg</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSSwitchCell</string>
-			<key>label</key>
-			<string>Hide page dots</string>
-			<key>defaults</key>
-			<string>com.artikus.neonboardprefs</string>
-			<key>key</key>
-			<string>kNoPageDots</string>
-		</dict>
-	</array>
-	<key>title</key>
-	<string>Customization</string>
-</dict>
+  <dict>
+    <key>items</key>
+    <array>
+      <dict>
+        <key>cell</key>
+        <string>PSGroupCell</string>
+        <key>label</key>
+        <string>Customization options</string>
+      </dict>
+      <dict>
+        <key>cell</key>
+        <string>PSSwitchCell</string>
+        <key>label</key>
+        <string>Hide labels</string>
+        <key>defaults</key>
+        <string>com.artikus.neonboardprefs</string>
+        <key>key</key>
+        <string>kHideLabels</string>
+      </dict>
+      <dict>
+        <key>cell</key>
+        <string>PSSwitchCell</string>
+        <key>label</key>
+        <string>Disable dark overlay</string>
+        <key>defaults</key>
+        <string>com.artikus.neonboardprefs</string>
+        <key>key</key>
+        <string>kNoOverlay</string>
+      </dict>
+      <dict>
+        <key>cell</key>
+        <string>PSSwitchCell</string>
+        <key>label</key>
+        <string>Hide dock background</string>
+        <key>defaults</key>
+        <string>com.artikus.neonboardprefs</string>
+        <key>key</key>
+        <string>kNoDockBg</string>
+      </dict>
+      <dict>
+        <key>cell</key>
+        <string>PSSwitchCell</string>
+        <key>label</key>
+        <string>Hide folder icon background</string>
+        <key>defaults</key>
+        <string>com.artikus.neonboardprefs</string>
+        <key>key</key>
+        <string>kNoFolderIconBg</string>
+      </dict>
+      <dict>
+        <key>cell</key>
+        <string>PSSwitchCell</string>
+        <key>label</key>
+        <string>Hide page dots</string>
+        <key>defaults</key>
+        <string>com.artikus.neonboardprefs</string>
+        <key>key</key>
+        <string>kNoPageDots</string>
+      </dict>
+    </array>
+    <key>title</key>
+    <string>Customization</string>
+  </dict>
 </plist>

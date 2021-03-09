@@ -122,39 +122,39 @@ NSString *backgroundBasePath;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = %orig;
   for (UIView *view in self.subviews) [view removeFromSuperview];
-  if (UIImage *customBackground = [UIImage imageNamed:@"ANEMFolderBackground" inBundle:[NSBundle bundleWithPath:backgroundBasePath]]) {
-    self.customLayer = [CALayer layer];
-    self.customLayer.contents = (id)customBackground.CGImage;
-    [self.layer insertSublayer:self.customLayer atIndex:0];
-  }
-  return self;
-}
-
-- (void)layoutSubviews {
-  %orig;
-  self.customLayer.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
-}
-
-%end
-
-%end
-
-%ctor {
-  if (!%c(Neon)) dlopen("/Library/MobileSubstrate/DynamicLibraries/NeonEngine.dylib", RTLD_LAZY);
-  if (!%c(Neon)) return;
-  for (NSString *theme in [%c(Neon) themes]) {
-    NSString *path = [NSString stringWithFormat:@"/Library/Themes/%@/Bundles/com.apple.springboard/", theme];
-    if (!iconBasePath) {
-      if ([%c(Neon) fullPathForImageNamed:@"ANEMFolderIconBG" atPath:path]) iconBasePath = path;
-      else for (NSString *name in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:nil]) if ([name rangeOfString:@"ANEMFolderIconBG"].location != NSNotFound) iconBasePath = path;
+    if (UIImage *customBackground = [UIImage imageNamed:@"ANEMFolderBackground" inBundle:[NSBundle bundleWithPath:backgroundBasePath]]) {
+      self.customLayer = [CALayer layer];
+      self.customLayer.contents = (id)customBackground.CGImage;
+      [self.layer insertSublayer:self.customLayer atIndex:0];
     }
-    if (!backgroundBasePath && [%c(Neon) fullPathForImageNamed:@"ANEMFolderBackground" atPath:path]) backgroundBasePath = path;
-    if (iconBasePath && backgroundBasePath) break;
+    return self;
   }
+
+  - (void)layoutSubviews {
+    %orig;
+    self.customLayer.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+  }
+
+  %end
+
+  %end
+
+  %ctor {
+    if (!%c(Neon)) dlopen("/Library/MobileSubstrate/DynamicLibraries/NeonEngine.dylib", RTLD_LAZY);
+    if (!%c(Neon)) return;
+    for (NSString *theme in [%c(Neon) themes]) {
+      NSString *path = [NSString stringWithFormat:@"/Library/Themes/%@/Bundles/com.apple.springboard/", theme];
+      if (!iconBasePath) {
+        if ([%c(Neon) fullPathForImageNamed:@"ANEMFolderIconBG" atPath:path]) iconBasePath = path;
+        else for (NSString *name in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:nil]) if ([name rangeOfString:@"ANEMFolderIconBG"].location != NSNotFound) iconBasePath = path;
+      }
+      if (!backgroundBasePath && [%c(Neon) fullPathForImageNamed:@"ANEMFolderBackground" atPath:path]) backgroundBasePath = path;
+      if (iconBasePath && backgroundBasePath) break;
+    }
   // we init this anyway bc there's the "ANEMFolderIconBG-FolderName" which is really crappy to detect
-  if (iconBasePath) {
-    if (kCFCoreFoundationVersionNumber >= 1665.15) %init(FolderIcon13Later);
-    else %init(FolderIcon7To12);
+    if (iconBasePath) {
+      if (kCFCoreFoundationVersionNumber >= 1665.15) %init(FolderIcon13Later);
+      else %init(FolderIcon7To12);
+    }
+    if (backgroundBasePath) %init(FolderBackground);
   }
-  if (backgroundBasePath) %init(FolderBackground);
-}

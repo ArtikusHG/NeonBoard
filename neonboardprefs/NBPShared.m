@@ -28,8 +28,8 @@ void respring() {
   [[NSFileManager defaultManager] createDirectoryAtPath:[NSClassFromString(@"Neon") renderDir] withIntermediateDirectories:YES attributes:@{NSFilePosixPermissions: @0777} error:nil];
 
   [[NSFileManager defaultManager] removeItemAtPath:@cacheDir error:nil];
-	[[NSFileManager defaultManager] removeItemAtPath:@"/var/containers/Shared/SystemGroup/systemgroup.com.apple.lsd.iconscache/Library/Caches/com.apple.IconsCache" error:nil];
-	[[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/Library/Caches/MappedImageCache/Persistent" error:nil];
+  [[NSFileManager defaultManager] removeItemAtPath:@"/var/containers/Shared/SystemGroup/systemgroup.com.apple.lsd.iconscache/Library/Caches/com.apple.IconsCache" error:nil];
+  [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/Library/Caches/MappedImageCache/Persistent" error:nil];
   [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/Library/Caches/com.apple.IconsCache" error:nil];
   [[NSFileManager defaultManager] removeItemAtPath:@"/var/mobile/Library/Caches/com.apple.UIStatusBar" error:nil];
 
@@ -69,15 +69,15 @@ void respring() {
       }
     }
     pid_t pid;
-  	int status;
-  	const char *argv[] = {"killall", "-KILL", "lsd", "lsdiconservice", "iconservicesagent", NULL};
-  	posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)argv, NULL);
-  	waitpid(pid, &status, WEXITED);
+    int status;
+    const char *argv[] = {"killall", "-KILL", "lsd", "lsdiconservice", "iconservicesagent", NULL};
+    posix_spawn(&pid, "/usr/bin/killall", NULL, NULL, (char* const*)argv, NULL);
+    waitpid(pid, &status, WEXITED);
 
     pid_t pid1;
-  	int status1;
-  	const char *argv1[] = {"killall", "-9", "iconservicesagent", "fontservicesd", "SpringBoard", NULL};
-  	posix_spawn(&pid1, "/usr/bin/killall", NULL, NULL, (char* const*)argv1, NULL);
-  	waitpid(pid1, &status1, WEXITED);
+    int status1;
+    const char *argv1[] = {"killall", "-9", "iconservicesagent", "fontservicesd", "SpringBoard", NULL};
+    posix_spawn(&pid1, "/usr/bin/killall", NULL, NULL, (char* const*)argv1, NULL);
+    waitpid(pid1, &status1, WEXITED);
   });
 }
