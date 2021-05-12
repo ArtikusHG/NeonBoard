@@ -6,10 +6,12 @@
     <string>com.apple.ActivityMessagesApp</string>
     <string>com.apple.AdPlatformsDiagnostics</string>
     <string>com.apple.AdSheetPhone</string>
+    <string>com.apple.AMSEngagementViewService</string>
     <string>com.apple.Animoji.StickersApp</string>
     <string>com.apple.appleaccount.AACredentialRecoveryDialog</string>
     <string>com.apple.AppSSOUIService</string>
     <string>com.apple.AskPermissionUI</string>
+    <string>com.apple.AuthenticationServicesUI</string>
     <string>com.apple.AuthKitUIService</string>
     <string>com.apple.AXUIViewService</string>
     <string>com.apple.BarcodeScanner</string>
@@ -52,6 +54,7 @@
     <string>com.apple.Home.HomeUIService</string>
     <string>com.apple.iad.iAdOptOut</string>
     <string>com.apple.icloud.apps.messages.business</string>
+    <string>com.apple.icloud.FindMyDevice.FindMyExtensionContainer</string>
     <string>com.apple.icloud.spnfcurl</string>
     <string>com.apple.icq</string>
     <string>com.apple.iMessageAppsViewService</string>
@@ -67,6 +70,7 @@
     <string>com.apple.MusicUIService</string>
     <string>com.apple.nike</string>
     <string>com.apple.Passbook</string>
+    <string>com.apple.PassbookBanner</string>
     <string>com.apple.PassbookSecureUIService</string>
     <string>com.apple.PassbookStub</string>
     <string>com.apple.PassbookUIService</string>
