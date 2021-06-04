@@ -27,7 +27,11 @@ NSString *customPathForPathNoCache(NSString *path) {
     }
     for (NSString *imagePath in potentialPaths) if ([[NSFileManager defaultManager] fileExistsAtPath:imagePath]) return imagePath;
   }
-return nil;
+  if ([path hasPrefix:@"/Applications/Activator.app"] && [filename rangeOfString:@"Icon"].location != NSNotFound) {
+    NSString *activatorPath = [[%c(Neon) renderDir] stringByAppendingPathComponent:filename];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:activatorPath]) return activatorPath;
+  }
+  return nil;
 }
 
 NSString *customPathForPath(NSString *path) {

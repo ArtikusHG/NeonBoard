@@ -17,6 +17,7 @@ NSString *themeNameFromDirectoryName(NSString *themeName);
     _specifiers = [NSMutableArray new];
 
     for (NSString *theme in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/Library/Themes/" error:nil]) {
+      if ([theme isEqualToString:@".NeonRenderCache"]) continue;
       NSString *themePath = [NSString stringWithFormat:@"/Library/Themes/%@/IconBundles", theme];
       if ([[NSFileManager defaultManager] fileExistsAtPath:themePath]) {
         // we check if the only thing in IconBundles is Icon.png (or icon.png, same but lowercase), the one provided to be displayed in the pref bundle, but not an actual app icon, to avoid listing useless themes

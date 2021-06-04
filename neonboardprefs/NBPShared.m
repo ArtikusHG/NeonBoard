@@ -68,6 +68,27 @@ void respring() {
         });
       }
     }
+
+    // activator frickery because yes
+    if ([[NSFileManager defaultManager] fileExistsAtPath:@"/Applications/Activator.app"]) {
+      UIImage *customIcon = [UIImage imageWithContentsOfFile:[NSClassFromString(@"Neon") iconPathForBundleID:@"libactivator"]];
+      if (customIcon) {
+        CGImageRef mask = [NSClassFromString(@"Neon") getMaskImage].CGImage;
+        for (NSString *file in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/Applications/Activator.app" error:nil]) {
+          if (![file hasPrefix:@"Icon"]) continue;
+          CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)[NSURL fileURLWithPath:[@"/Applications/Activator.app" stringByAppendingPathComponent:file]], NULL);
+          NSDictionary *imageHeader = (__bridge NSDictionary *)CGImageSourceCopyPropertiesAtIndex(source, 0, NULL);
+          CGSize size = CGSizeMake([imageHeader[@"PixelWidth"] floatValue], [imageHeader[@"PixelHeight"] floatValue]);
+          UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
+          CGContextClipToMask(UIGraphicsGetCurrentContext(), CGRectMake(0, 0, size.width, size.height), mask);
+          [customIcon drawInRect:CGRectMake(0, 0, size.width, size.height)];
+          UIImage *final = UIGraphicsGetImageFromCurrentImageContext();
+          UIGraphicsEndImageContext();
+          [UIImagePNGRepresentation(final) writeToFile:[[NSClassFromString(@"Neon") renderDir] stringByAppendingPathComponent:file] atomically:YES];
+        }
+      }
+    }
+
     pid_t pid;
     int status;
     const char *argv[] = {"killall", "-KILL", "lsd", "lsdiconservice", "iconservicesagent", NULL};

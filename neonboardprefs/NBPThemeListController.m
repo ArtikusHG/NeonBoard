@@ -54,6 +54,7 @@ NSString *themeNameFromDirectoryName(NSString *themeName) {
     if (!enabledThemes) enabledThemes = [[prefs objectForKey:@"enabledThemes"] mutableCopy] ? : [NSMutableArray new];
 
     NSMutableArray *allThemes = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/Library/Themes" error:nil] mutableCopy];
+    [allThemes removeObject:@".NeonRenderCache"];
     if (!enabledThemesSpecifiers) {
       enabledThemesSpecifiers = [NSMutableArray new];
       for (NSString *theme in enabledThemes) {

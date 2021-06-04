@@ -39,7 +39,7 @@ NSDictionary *overrideThemes;
   //return [docs stringByAppendingPathComponent:@"NeonRenderCache"];
   // so i added this because the documents wasnt working. it started working. then i brought documents back. it also started working. weirdchamp? well, at least it works....
   //return @"/Library/Themes/NeonRenderCache";
-  return @"/var/mobile/Documents/NeonRenderCache";
+  return (kCFCoreFoundationVersionNumber >= 1348.00) ? @"/Library/Themes/.NeonRenderCache" : @"/var/mobile/Documents/NeonRenderCache";
 }
 
 CFPropertyListRef MGCopyAnswer(CFStringRef property);

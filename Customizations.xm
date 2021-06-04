@@ -79,6 +79,12 @@
 %end
 %end
 
+%group ActivatorNoBlur
+%hook SBActivatorIconImageView
+- (void)setBackgroundView:(UIView *)view {}
+%end
+%end
+
 %ctor {
   if (![[NSProcessInfo processInfo].processName isEqualToString:@"SpringBoard"]) return;
   if (!%c(Neon)) dlopen("/Library/MobileSubstrate/DynamicLibraries/NeonEngine.dylib", RTLD_LAZY);
@@ -94,4 +100,5 @@
     else %init(NoFolderIconBgiOS13);
   }
   if ([[prefs valueForKey:@"kMaskWidgets"] boolValue]) %init(MaskWidgets);
+  if ([[prefs valueForKey:@"kActivatorFix"] boolValue]) %init(ActivatorNoBlur);
 }
