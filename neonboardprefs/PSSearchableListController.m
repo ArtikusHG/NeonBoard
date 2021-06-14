@@ -29,7 +29,7 @@
     return;
   }
   NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(PSSpecifier *specifier, NSDictionary *bindings) {
-    NSString* key = [specifier propertyForKey:@"iconImage"];
+    NSString *key = [specifier propertyForKey:@"iconImage"];
     if (key) {
       return [specifier.name.lowercaseString rangeOfString:text.lowercaseString].location != NSNotFound;
     } else {

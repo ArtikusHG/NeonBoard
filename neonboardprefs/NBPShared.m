@@ -70,21 +70,24 @@ void respring() {
     }
 
     // activator frickery because yes
+    // TODO not mask glyph (????) (idk really :c)
     if ([[NSFileManager defaultManager] fileExistsAtPath:@"/Applications/Activator.app"]) {
       UIImage *customIcon = [UIImage imageWithContentsOfFile:[NSClassFromString(@"Neon") iconPathForBundleID:@"libactivator"]];
       if (customIcon) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:[[NSClassFromString(@"Neon") renderDir] stringByAppendingPathComponent:@"Activator"] withIntermediateDirectories:YES attributes:@{NSFilePosixPermissions: @0777} error:nil];
         CGImageRef mask = [NSClassFromString(@"Neon") getMaskImage].CGImage;
         for (NSString *file in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/Applications/Activator.app" error:nil]) {
           if (![file hasPrefix:@"Icon"]) continue;
           CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)[NSURL fileURLWithPath:[@"/Applications/Activator.app" stringByAppendingPathComponent:file]], NULL);
           NSDictionary *imageHeader = (__bridge NSDictionary *)CGImageSourceCopyPropertiesAtIndex(source, 0, NULL);
-          CGSize size = CGSizeMake([imageHeader[@"PixelWidth"] floatValue], [imageHeader[@"PixelHeight"] floatValue]);
-          UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
+          CGFloat scale = [UIScreen mainScreen].scale;
+          CGSize size = CGSizeMake([imageHeader[@"PixelWidth"] floatValue] / scale, [imageHeader[@"PixelHeight"] floatValue] / scale);
+          UIGraphicsBeginImageContextWithOptions(size, NO, scale);
           CGContextClipToMask(UIGraphicsGetCurrentContext(), CGRectMake(0, 0, size.width, size.height), mask);
           [customIcon drawInRect:CGRectMake(0, 0, size.width, size.height)];
           UIImage *final = UIGraphicsGetImageFromCurrentImageContext();
           UIGraphicsEndImageContext();
-          [UIImagePNGRepresentation(final) writeToFile:[[NSClassFromString(@"Neon") renderDir] stringByAppendingPathComponent:file] atomically:YES];
+          [UIImagePNGRepresentation(final) writeToFile:[NSString stringWithFormat:@"%@/Activator/%@", [NSClassFromString(@"Neon") renderDir], file] atomically:YES];
         }
       }
     }
