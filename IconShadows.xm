@@ -1,8 +1,12 @@
 #include "Neon.h"
 
-NSString *shadowPath;
+static NSString *shadowPath = nil;
+
+@interface SBIcon : NSObject
+@end
 
 @interface SBIconView : UIView
+@property (nonatomic, strong) SBIcon *icon; 
 @property (nonatomic, retain) CALayer *shadowLayer;
 - (void)neon_setupShadow;
 @end
@@ -30,6 +34,7 @@ NSString *shadowPath;
   if ([NSStringFromClass([self class]) isEqualToString:@"SBIconView"]) [self neon_setupShadow];
   return self;
 }
+
 // 9 - 12
 - (instancetype)initWithContentType:(unsigned long long)contentType {
   if (contentType != 0) return %orig;
@@ -37,6 +42,7 @@ NSString *shadowPath;
   [self neon_setupShadow];
   return self;
 }
+
 // 7 - 8
 - (instancetype)initWithDefaultSize {
   self = %orig;
@@ -50,7 +56,8 @@ NSString *shadowPath;
 - (void)layoutSubviews {
   %orig;
   [self.shadowLayer removeFromSuperlayer];
-  [self.layer insertSublayer:self.shadowLayer atIndex:0];
+  if (![self.icon isKindOfClass:%c(SBWidgetIcon)])
+    [self.layer insertSublayer:self.shadowLayer atIndex:0];
 }
 
 %end

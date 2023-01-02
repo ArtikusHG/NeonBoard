@@ -1,3 +1,4 @@
+TARGET := iphone:clang:14.5:13.0
 include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = NeonSettings

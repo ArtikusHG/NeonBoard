@@ -1,0 +1,4 @@
+/* You guys who interested in jailbreak development */
+/* should know how to import the header files in a prefix header. */
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>

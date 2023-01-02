@@ -1,4 +1,5 @@
 #include <spawn.h>
+#include <notify.h>
 #include <signal.h>
 #include <AppSupport/CPDistributedMessagingCenter.h>
 #include "../Neon.h"
@@ -91,6 +92,9 @@ void respring() {
         }
       }
     }
+
+    /* Tell related daemons to suiside */
+    notify_post("com.artikus.neonboard.reload");
 
     pid_t pid;
     int status;

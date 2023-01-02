@@ -3,6 +3,6 @@
     Bundles = (
       "com.apple.UIKit",
       "com.apple.IconServices"
-      );
+    );
   };
 }
