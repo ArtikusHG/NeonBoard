@@ -46,7 +46,7 @@
   return self;
 }
 
-- (UIImage *)_currentOverlayImage { return [[%c(Neon) getMaskImage] imageOfSize:%orig.size] ? : %orig; }
+- (UIImage *)_currentOverlayImage { UIImage *img = %orig; return [[%c(Neon) getMaskImage] imageOfSize:img.size] ?: img; }
 
 %end
 

@@ -40,7 +40,7 @@ void drawIconIntoContext(CGContextRef ctx, CGSize imageSize, BOOL masked, UIImag
 }
 
 UIImage *calendarIconForSize(CGSize imageSize, BOOL masked) {
-  UIGraphicsBeginImageContextWithOptions(imageSize, NO, [UIScreen mainScreen].scale);
+  UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0.0);
   drawIconIntoContext(UIGraphicsGetCurrentContext(), imageSize, masked, nil);
   UIImage *icon = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();

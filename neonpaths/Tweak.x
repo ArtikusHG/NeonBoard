@@ -1,10 +1,10 @@
 #include "../Neon.h"
 
-NSCache *pathCache;
-NSArray *themes;
-BOOL glyphMode;
+static NSCache *pathCache = nil;
+static NSArray *themes = nil;
+static BOOL glyphMode = NO;
 
-NSString *customPathForPathNoCache(NSString *path) {
+static NSString *customPathForPathNoCache(NSString *path) {
   if (!path) return nil;
   NSString *filename = path.lastPathComponent;
   for (NSString *theme in themes) {
@@ -34,9 +34,9 @@ NSString *customPathForPathNoCache(NSString *path) {
   return nil;
 }
 
-NSString *customPathForPath(NSString *path) {
+static NSString *customPathForPath(NSString *path) {
   if (!path) return nil;
-  for (NSString *str in @[@"/Library/Themes", @"NeonCache"]) if ([path rangeOfString:str].location != NSNotFound) return nil;
+  for (NSString *str in @[@"/Library/Themes", @"/NeonCache"]) if ([path rangeOfString:str].location != NSNotFound) return nil;
     NSString *cachedPath = [pathCache objectForKey:path];
   if (cachedPath) {
     // check if it exists cuz if someone removes a theme
@@ -49,25 +49,26 @@ NSString *customPathForPath(NSString *path) {
   return customPath;
 }
 
-CGImageSourceRef CGImageSourceCreateWithURL(CFURLRef url, CFDictionaryRef options);
-%hookf(CGImageSourceRef, CGImageSourceCreateWithURL, CFURLRef url, NSDictionary *options) {
+FOUNDATION_EXTERN CGImageSourceRef CGImageSourceCreateWithURL(CFURLRef url, CFDictionaryRef options);
+%hookf(CGImageSourceRef, CGImageSourceCreateWithURL, CFURLRef url, CFDictionaryRef options) {
   NSString *path = [(__bridge NSURL *)url path];
   if (glyphMode && [path.lastPathComponent rangeOfString:@"TableIconOutline"].location != NSNotFound) return nil;
+  if ([path.pathComponents containsObject:@"VPNPreferences.bundle"]) return %orig;
   NSString *newPath = customPathForPath(path);
   return (newPath) ? %orig(CFBridgingRetain([NSURL fileURLWithPath:newPath]), options) : %orig;
 }
 
-CGImageRef *CGImageSourceCreateWithFile(NSString *path, NSDictionary *options);
-%hookf(CGImageSourceRef, CGImageSourceCreateWithFile, NSString *path, NSDictionary *options) {
-  if (glyphMode && [path.lastPathComponent rangeOfString:@"TableIconOutline"].location != NSNotFound) return nil;
-  NSString *newPath = customPathForPath(path);
-  return (newPath) ? %orig(newPath, options) : %orig;
+FOUNDATION_EXTERN CGImageRef *CGImageSourceCreateWithFile(CFStringRef path, CFDictionaryRef options);
+%hookf(CGImageSourceRef, CGImageSourceCreateWithFile, CFStringRef path, CFDictionaryRef options) {
+  if (glyphMode && [[(__bridge NSString *)path lastPathComponent] rangeOfString:@"TableIconOutline"].location != NSNotFound) return nil;
+  NSString *newPath = customPathForPath((__bridge NSString *)path);
+  return (newPath) ? %orig((__bridge CFStringRef)newPath, options) : %orig;
 }
 
 %hook NSBundle
-- (NSString *)pathForResource:(NSString *)resource ofType:(NSString *)type { return customPathForPath(%orig) ? : %orig; }
-- (NSString *)pathForResource:(NSString *)resource ofType:(NSString *)type inDirectory:(NSString *)directory { return customPathForPath(%orig) ? : %orig; }
-+ (NSString *)pathForResource:(NSString *)resource ofType:(NSString *)type inDirectory:(NSString *)directory { return customPathForPath(%orig) ? : %orig; }
+- (NSString *)pathForResource:(NSString *)resource ofType:(NSString *)type { NSString *path = %orig; return customPathForPath(path) ?: path; }
+- (NSString *)pathForResource:(NSString *)resource ofType:(NSString *)type inDirectory:(NSString *)directory { NSString *path = %orig; return customPathForPath(path) ? : path; }
++ (NSString *)pathForResource:(NSString *)resource ofType:(NSString *)type inDirectory:(NSString *)directory { NSString *path = %orig; return customPathForPath(path) ? : path; }
 %end
 
 %hookf(CFURLRef, CFBundleCopyResourceURL, CFBundleRef bundle, CFStringRef resourceName, CFStringRef resourceType, CFStringRef subDirName) {

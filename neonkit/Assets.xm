@@ -150,7 +150,7 @@ UIImage *configureUIImage(UIImage *custom, UIImage *orig, id configuration, BOOL
 
 - (instancetype)initWithName:(NSString *)name scaleFactor:(CGFloat)scaleFactor deviceIdiom:(long long)idiom pointSize:(double)pointSize fromCatalog:(id)catalog usingRenditionKey:(id)usingRenditionKey fromTheme:(unsigned long long)theme {
   self = %orig;
-  if (![glyphNames containsObject:name]) return %orig;
+  if (![glyphNames containsObject:name]) return self;
   if ([NeonCacheManager isImageNameUnthemed:name bundleID:@"com.apple.CoreGlyphs"]) return self;
   else if (NSString *path = customPathForName(name, [NSBundle bundleWithIdentifier:@"com.apple.CoreGlyphs"])) self.customPath = path;
   else [NeonCacheManager addUnthemedImageName:name bundleID:@"com.apple.CoreGlyphs"];

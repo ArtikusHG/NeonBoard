@@ -1,7 +1,7 @@
 Package: com.artikus.neonboard
 Name: NeonBoard
 Depends: firmware (>= 13.0), mobilesubstrate, preferenceloader
-Version: 1.0.15
+Version: 1.0.16
 Architecture: iphoneos-arm
 Description: A fully-featured lightweight theming engine for iOS 13 or above.
 Maintainer: ArtikusHG

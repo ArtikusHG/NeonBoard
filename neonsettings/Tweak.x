@@ -11,26 +11,27 @@ NSArray *CPBitmapCreateImagesFromPath(NSString *path, CFTypeRef *names, void *ar
 // https://stackoverflow.com/questions/7792622/manual-retain-with-arc
 #define AntiARCRetain(...) void *retainedThing = (__bridge_retained void *)__VA_ARGS__; retainedThing = retainedThing
 
-BOOL maskIcons;
+static BOOL maskIcons = NO;
 
-%hookf(NSArray *, CPBitmapCreateImagesFromPath, NSString *path, CFTypeRef *names, void *arg2, void *arg3) {
-  if (!%orig || %orig.count == 0 || !names) return %orig;
-  NSDictionary *indexes;
-  NSEnumerator *enumerator;
+%hookf(NSArray *, CPBitmapCreateImagesFromPath, NSString *path, CFTypeRef *names, void *arg2, void *arg3)
+{
+  NSArray *images = %orig;
+  if (!images || !images.count || !names)
+    return images;
+  NSDictionary *indexes = nil;
+  NSEnumerator *enumerator = nil;
   if (CFGetTypeID((CFTypeRef) *names) == CFDictionaryGetTypeID()) {
     indexes = (__bridge NSDictionary *)(CFDictionaryRef)names;
     enumerator = [indexes keyEnumerator];
   } else enumerator = [(__bridge NSArray *)*names objectEnumerator];
-
-  NSArray *images = %orig;
   NSMutableArray *copy = [images mutableCopy];
   images = copy;
-  NSString *name;
-  BOOL isDir;
+  NSString *name = nil;
+  BOOL isDir = NO;
   [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
   NSString *bundleID = [NSBundle bundleWithPath:(isDir) ? path : path.stringByDeletingLastPathComponent].bundleIdentifier;
   for (NSUInteger index = 0; name = [enumerator nextObject]; index++) {
-    UIImage *finalImage;
+    UIImage *finalImage = nil;
     UIImage *cachedImage = [%c(NeonCacheManager) getCacheImage:name bundleID:@"NeonSettings"];
     if (cachedImage) finalImage = cachedImage;
     else {

@@ -42,7 +42,8 @@ NSString *backgroundBasePath;
 %property (nonatomic, retain) UIImageView *neonCustomBackgroundView;
 
 - (void)setBackgroundView:(UIView *)view {
-  if (self.neonCustomBackgroundView) %orig(self.neonCustomBackgroundView);
+  if (self.neonCustomBackgroundView)
+    %orig(self.neonCustomBackgroundView);
   UIImage *customImage = [UIImage imageNamed:@"ANEMFolderIconBG" inBundle:[NSBundle bundleWithPath:iconBasePath]];
   if (customImage && !self.neonCustomBackgroundView) {
     self.neonCustomBackgroundView = [[UIImageView alloc] initWithImage:customImage];

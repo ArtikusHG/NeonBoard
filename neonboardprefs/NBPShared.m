@@ -16,7 +16,7 @@ void writePrefsDict(NSDictionary *dict) {
 }
 
 UIImage *iconForCellFromIcon(UIImage *icon, CGSize size) {
-  UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
+  UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
   CGContextClipToMask(UIGraphicsGetCurrentContext(), CGRectMake(0, 0, size.width, size.height), [NSClassFromString(@"Neon") getMaskImage].CGImage);
   [icon drawInRect:CGRectMake(0, 0, size.width, size.height)];
   UIImage *newIcon = UIGraphicsGetImageFromCurrentImageContext();

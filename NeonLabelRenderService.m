@@ -47,7 +47,7 @@ void drawStringInContextWithSettingsDict(NSString *str, CGContextRef ctx, NSDict
   if (size.width != 0) size.width += [dict[@"WidthChange"] floatValue];
   if (size.width == 0 || size.height == 0) return;
   if (!ctx) {
-    UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
     ctx = UIGraphicsGetCurrentContext();
   }
   UIColor *textColor = (UIColor *)dict[@"TextColor"] ? : fallbackColor;

@@ -42,7 +42,7 @@ UIImage *clockImageNamed(NSString *name) {
 UIImage *customClockBackground(CGSize size, BOOL masked) {
   UIImage *custom = clockImageNamed(@"ClockIconBackgroundSquare");
   if (!custom) return nil;
-  UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
+  UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
   if (masked) CGContextClipToMask(UIGraphicsGetCurrentContext(), CGRectMake(0, 0, size.width, size.height), [%c(Neon) getMaskImage].CGImage);
   if ([%c(NeonRenderService) underlay]) [[%c(NeonRenderService) underlay] drawInRect:CGRectMake(0, 0, size.height, size.width)];
   [custom drawInRect:CGRectMake(0, 0, size.width, size.height)];
@@ -59,8 +59,8 @@ UIImage *proportionalResize(UIImage *image, CGSize size) {
 
 %group AllVersions
 %hook SBClockApplicationIconImageView
-- (UIImage *)contentsImage { return customClockBackground(%orig.size, YES) ? : %orig; }
-- (UIImage *)squareContentsImage { return customClockBackground(%orig.size, NO) ? : %orig; }
+- (UIImage *)contentsImage { UIImage *img = %orig; return customClockBackground(img.size, YES) ? : img; }
+- (UIImage *)squareContentsImage { UIImage *img = %orig; return customClockBackground(img.size, NO) ? : img; }
 %end
 %end
 
@@ -152,7 +152,7 @@ SBHClockApplicationIconImageMetrics origMetrics;
   [MSHookIvar<CALayer *>(view, "_minutes") setAffineTransform:CGAffineTransformMake(0.453, 0.891, -0.891, 0.453, 0, 0)];
   [MSHookIvar<CALayer *>(view, "_seconds") setAffineTransform:CGAffineTransformMakeRotation(M_PI)];
   // render stuff
-  UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
+  UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
   if ([[[%c(Neon) prefs] objectForKey:@"kMaskRendered"] boolValue])
     CGContextClipToMask(UIGraphicsGetCurrentContext(), rect, [%c(Neon) getMaskImage].CGImage);
   if (kCFCoreFoundationVersionNumber < 1740) {

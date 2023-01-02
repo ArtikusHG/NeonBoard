@@ -184,10 +184,11 @@ static NSMutableDictionary *_kNeonURLBundleIDMap = nil;
   if (!%c(Neon)) dlopen("/Library/MobileSubstrate/DynamicLibraries/NeonEngine.dylib", RTLD_LAZY);
   if (!%c(Neon)) return;
   if ([%c(Neon) themes] && [%c(Neon) themes].count > 0) {
-    if (kCFCoreFoundationVersionNumber >= 1854) %init(Themes15);
+    /**/ if (kCFCoreFoundationVersionNumber >= 1854.00) %init(Themes15);
     else if (kCFCoreFoundationVersionNumber >= 1665.15) %init(Themes13);
-    else if (kCFCoreFoundationVersionNumber >= 1443.00) %init(Themes_1112)
-      else %init(ThemesOlder);
-    if ([[%c(Neon) prefs] valueForKey:@"kGlyphMode"] && [[[%c(Neon) prefs] valueForKey:@"kGlyphMode"] boolValue]) %init(GlyphMode);
+    else if (kCFCoreFoundationVersionNumber >= 1443.00) %init(Themes_1112);
+    else %init(ThemesOlder);
+    if ([[%c(Neon) prefs] valueForKey:@"kGlyphMode"] && [[[%c(Neon) prefs] valueForKey:@"kGlyphMode"] boolValue])
+      %init(GlyphMode);
   }
 }
