@@ -11,7 +11,7 @@ BOOL customImageLoaded = NO;
     thumbImage = [UIImage imageNamed:@"UISwitchKnob"];
     customImageLoaded = YES;
   }
-  return thumbImage ? : %orig;
+  return thumbImage ?: %orig;
 }
 %end
 

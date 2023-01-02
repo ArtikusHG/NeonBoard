@@ -37,7 +37,7 @@ UIImage *maskImage;
 @implementation UIImage (Neon)
 
 - (UIImage *)imageOfSize:(CGSize)size {
-  UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
+  UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
   [self drawInRect:CGRectMake(0, 0, size.width, size.height)];
   UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
@@ -49,7 +49,7 @@ UIImage *maskImage;
   if (maskImage) {
     CGSize size = (icon) ? [%c(Neon) homescreenIconSize] : self.size;
     CGRect imageRect = CGRectMake(0, 0, size.width, size.height);
-    UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
     CGContextClipToMask(UIGraphicsGetCurrentContext(), imageRect, [%c(Neon) getMaskImage].CGImage);
     if (blackBackground) {
       [[UIColor blackColor] setFill];

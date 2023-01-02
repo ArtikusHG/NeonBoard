@@ -1,3 +1,6 @@
+export GO_EASY_ON_ME = 1
+
+TARGET := iphone:clang:14.5:13.0
 include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = neonboardprefs
